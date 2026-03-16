@@ -4,6 +4,7 @@ import Webcam from 'react-webcam';
 import { GoogleGenAI } from '@google/genai';
 import { clsx } from 'clsx';
 import { usePlants, Plant, Task } from '../context/PlantContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { format, addDays } from 'date-fns';
 
@@ -16,6 +17,7 @@ export default function Scan() {
   const [weeklyScanAgreed, setWeeklyScanAgreed] = useState(false);
   const webcamRef = useRef<Webcam>(null);
   const { addPlant, addTask } = usePlants();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const capture = useCallback(() => {
@@ -60,7 +62,8 @@ export default function Scan() {
           "issues": ["List of possible problems, if any"],
           "sunlight": "e.g., Bright indirect",
           "temperature": "e.g., 18-30°C",
-          "humidity": "e.g., High (60%+)"
+          "humidity": "e.g., High (60%+)",
+          "wateringFrequencyDays": number (e.g., 7 for every 7 days)
         }
         Only return the JSON object, nothing else.
       `;
@@ -97,7 +100,8 @@ export default function Scan() {
         issues: ['Analysis error'],
         sunlight: 'Unknown',
         temperature: 'Unknown',
-        humidity: 'Unknown'
+        humidity: 'Unknown',
+        wateringFrequencyDays: 7
       });
     } finally {
       setIsScanning(false);
@@ -124,30 +128,21 @@ export default function Scan() {
 
     addPlant(newPlant);
 
-    // Generate a simple watering schedule based on the plant name
-    // For a real app, we'd use Gemini to generate the specific schedule, but here we create a few tasks
     const today = new Date();
+    const freq = result.wateringFrequencyDays || 7;
     
-    // Task 1: Tomorrow
-    addTask({
-      id: Date.now().toString() + '1',
-      plant: newPlant.name,
-      time: 'Morning',
-      amount: '150ml',
-      completed: false,
-      date: format(addDays(today, 1), 'yyyy-MM-dd')
-    });
-
-    // Task 2: Next week
-    addTask({
-      id: Date.now().toString() + '2',
-      plant: newPlant.name,
-      time: 'Morning',
-      amount: '150ml',
-      completed: false,
-      date: format(addDays(today, 8), 'yyyy-MM-dd'),
-      type: 'water'
-    });
+    // Generate watering tasks for the next 30 days based on frequency
+    for (let i = 1; i <= 30; i += freq) {
+      addTask({
+        id: Date.now().toString() + 'water' + i,
+        plant: newPlant.name,
+        time: 'Morning',
+        amount: '150ml',
+        completed: false,
+        date: format(addDays(today, i), 'yyyy-MM-dd'),
+        type: 'water'
+      });
+    }
 
     // Task 3: Weekly Health Scan (Recurring for next 4 weeks)
     for (let i = 1; i <= 4; i++) {
@@ -170,7 +165,7 @@ export default function Scan() {
     <div className="flex flex-col h-full bg-stone-900 text-white relative">
       {/* Header */}
       <div className="absolute top-0 w-full z-10 p-4 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent">
-        <h1 className="text-xl font-bold tracking-tight">Plant Scanner</h1>
+        <h1 className="text-xl font-bold tracking-tight">{t('Plant Scanner')}</h1>
         {image && (
           <button onClick={() => { setImage(null); setResult(null); }} className="p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60 transition-colors">
             <X className="w-5 h-5" />
@@ -211,8 +206,8 @@ export default function Scan() {
               <div className="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent animate-spin"></div>
               <Leaf className="absolute inset-0 m-auto w-8 h-8 text-emerald-400 animate-pulse" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Analyzing Plant...</h2>
-            <p className="text-stone-300 text-sm">Identifying species and checking health</p>
+            <h2 className="text-xl font-bold text-white mb-2">{t('Analyzing Plant...')}</h2>
+            <p className="text-stone-300 text-sm">{t('Identifying species and checking health')}</p>
           </div>
         )}
       </div>
@@ -236,7 +231,7 @@ export default function Scan() {
                     result.healthScore >= 50 ? "bg-yellow-100 text-yellow-700" :
                     "bg-red-100 text-red-700"
                   )}>
-                    Health: {result.healthScore}%
+                    {t('Health')}: {result.healthScore}%
                   </span>
                 </div>
               </div>
@@ -252,18 +247,18 @@ export default function Scan() {
 
             <div className="space-y-4">
               <div className="bg-stone-50 p-4 rounded-2xl border border-stone-100">
-                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-wider mb-2">Diagnosis</h3>
+                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-wider mb-2">{t('Diagnosis')}</h3>
                 <p className="text-stone-800 font-medium">{result.diagnosis}</p>
               </div>
 
               <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
-                <h3 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">Recommendation</h3>
+                <h3 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">{t('Recommendation')}</h3>
                 <p className="text-emerald-900 font-medium">{result.recommendation}</p>
               </div>
 
               {result.issues && result.issues.length > 0 && (
                 <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
-                  <h3 className="text-sm font-bold text-red-600 uppercase tracking-wider mb-2">Possible Issues</h3>
+                  <h3 className="text-sm font-bold text-red-600 uppercase tracking-wider mb-2">{t('Possible Issues')}</h3>
                   <ul className="list-disc list-inside text-red-900 font-medium space-y-1">
                     {result.issues.map((issue: string, idx: number) => (
                       <li key={idx}>{issue}</li>
@@ -275,13 +270,13 @@ export default function Scan() {
 
             <div className="mt-8 flex gap-3">
               <button className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors" onClick={() => { setImage(null); setResult(null); }}>
-                Scan Another
+                {t('Scan Another')}
               </button>
               <button 
                 onClick={() => setShowLocationModal(true)}
                 className="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
               >
-                Save to My Plants
+                {t('Save to My Plants')}
               </button>
             </div>
           </div>
@@ -292,8 +287,8 @@ export default function Scan() {
       {showLocationModal && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-md text-stone-900 shadow-2xl">
-            <h3 className="text-xl font-bold mb-2">Where is this plant located?</h3>
-            <p className="text-stone-500 text-sm mb-4">This helps us customize its care schedule based on typical room conditions.</p>
+            <h3 className="text-xl font-bold mb-2">{t('Where is this plant located?')}</h3>
+            <p className="text-stone-500 text-sm mb-4">{t('This helps us customize its care schedule based on typical room conditions.')}</p>
             
             <input 
               type="text" 
@@ -313,7 +308,7 @@ export default function Scan() {
                 className="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 shrink-0"
               />
               <label htmlFor="weekly-scan" className="text-sm text-emerald-900 font-medium cursor-pointer leading-tight">
-                I agree to take a picture of this plant each week for its routine Health Scan to ensure it stays healthy.
+                {t('I agree to take a picture of this plant each week for its routine Health Scan to ensure it stays healthy.')}
               </label>
             </div>
             
@@ -322,14 +317,14 @@ export default function Scan() {
                 onClick={() => setShowLocationModal(false)}
                 className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors"
               >
-                Cancel
+                {t('Cancel')}
               </button>
               <button 
                 onClick={handleSavePlant}
                 disabled={!locationInput.trim() || !weeklyScanAgreed}
                 className="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 disabled:opacity-50"
               >
-                Save Plant
+                {t('Save Plant')}
               </button>
             </div>
           </div>

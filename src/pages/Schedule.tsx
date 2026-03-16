@@ -3,9 +3,11 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Droplets, CheckCir
 import { format, addDays, startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import { clsx } from 'clsx';
 import { usePlants, Task } from '../context/PlantContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Schedule() {
   const { schedule, setSchedule } = usePlants();
+  const { t } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
@@ -50,8 +52,8 @@ export default function Schedule() {
   const addTask = () => {
     const newTask: Task = {
       id: Date.now().toString(),
-      plant: 'New Plant',
-      time: 'Morning',
+      plant: t('New Plant'),
+      time: t('Morning'),
       amount: '100ml',
       completed: false,
       date: selectedDateStr,
@@ -65,8 +67,8 @@ export default function Schedule() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-stone-800">Watering Schedule</h1>
-          <p className="text-stone-500 mt-1">Keep your plants hydrated and happy.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-800">{t('Watering Schedule')}</h1>
+          <p className="text-stone-500 mt-1">{t('Keep your plants hydrated and happy.')}</p>
         </div>
         <button className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center hover:bg-stone-200 transition-colors">
           <CalendarIcon className="w-5 h-5" />
@@ -99,12 +101,12 @@ export default function Schedule() {
                 className={clsx(
                   "flex flex-col items-center justify-center w-12 h-16 rounded-2xl transition-all",
                   isSelected 
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20 active-date" 
                     : "hover:bg-stone-50 text-stone-500"
                 )}
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider mb-1">
-                  {format(day, 'EEE')}
+                  {t(format(day, 'EEE'))}
                 </span>
                 <span className={clsx(
                   "text-lg font-bold",
@@ -127,9 +129,9 @@ export default function Schedule() {
           <Droplets className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-bold text-stone-800 text-sm mb-1">AI Smart Schedule Active</h3>
+          <h3 className="font-bold text-stone-800 text-sm mb-1">{t('AI Smart Schedule Active')}</h3>
           <p className="text-xs text-stone-600 leading-relaxed">
-            Schedules are automatically adjusted based on your local weather, plant type, and recent health scans.
+            {t('Schedules are automatically adjusted based on your local weather, plant type, and recent health scans.')}
           </p>
         </div>
       </div>
@@ -139,14 +141,14 @@ export default function Schedule() {
         <div className="flex justify-between items-end mb-4">
           <h2 className="text-xl font-bold text-stone-800">
             {format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') 
-              ? "Today's Tasks" 
-              : `Tasks for ${format(selectedDate, 'MMM d')}`}
+              ? t("Today's Tasks") 
+              : `${t('Tasks for')} ${format(selectedDate, 'MMM d')}`}
           </h2>
           <button 
             onClick={addTask}
             className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
           >
-            <Plus className="w-4 h-4" /> Add Task
+            <Plus className="w-4 h-4" /> {t('Add Task')}
           </button>
         </div>
         
@@ -185,25 +187,25 @@ export default function Schedule() {
                         value={editForm.time} 
                         onChange={(e) => setEditForm({...editForm, time: e.target.value})}
                         className="text-xs font-medium text-stone-700 bg-stone-100 px-2 py-1 rounded-md border border-stone-200 focus:outline-none focus:border-emerald-500 w-24"
-                        placeholder="Time"
+                        placeholder={t('Time')}
                       />
                       <input 
                         type="text" 
                         value={editForm.amount} 
                         onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
                         className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 focus:outline-none focus:border-blue-500 w-24"
-                        placeholder="Amount"
+                        placeholder={t('Amount')}
                       />
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">{task.time}</span>
+                      <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">{t(task.time)}</span>
                       <span className={clsx(
                         "text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1",
                         task.type === 'scan' ? "text-purple-600 bg-purple-50" : "text-blue-600 bg-blue-50"
                       )}>
                         {task.type === 'scan' ? <Camera className="w-3 h-3" /> : <Droplets className="w-3 h-3" />}
-                        {task.amount}
+                        {t(task.amount)}
                       </span>
                     </div>
                   )}
@@ -238,8 +240,8 @@ export default function Schedule() {
             <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mb-4">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h3 className="font-bold text-stone-800 mb-1">All caught up!</h3>
-            <p className="text-sm text-stone-500">No tasks scheduled for this day.</p>
+            <h3 className="font-bold text-stone-800 mb-1">{t('All caught up!')}</h3>
+            <p className="text-sm text-stone-500">{t('No tasks scheduled for this day.')}</p>
           </div>
         )}
       </div>

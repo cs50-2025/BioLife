@@ -6,6 +6,35 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+.dark, .dark * {
+  background-color: black !important;
+  background-image: none !important;
+  color: white !important;
+  border-color: white !important;
+}
+
+.dark img, .dark video, .dark canvas {
+  background-color: transparent !important;
+}
+
+.dark button, .dark input, .dark select, .dark textarea, .dark a {
+  border: 1px solid white !important;
+}
+
+.dark .force-white-bg {
+  background-color: white !important;
+}
+
+.dark .active-nav-link, .dark .active-nav-link *, .dark .active-date, .dark .active-date * {
+  background-color: white !important;
+  color: black !important;
+}
+
+.dark ::placeholder {
+  color: white !important;
+  opacity: 0.7 !important;
+}
+
 /* Hide scrollbar for horizontal scrolling areas */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -13,6 +42,10 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Markdown Styles */

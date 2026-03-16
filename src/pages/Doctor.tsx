@@ -3,6 +3,7 @@ import { Send, Image as ImageIcon, Bot, User, Loader2 } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import { clsx } from 'clsx';
+import { useLanguage } from '../context/LanguageContext';
 
 type Message = {
   id: string;
@@ -12,11 +13,12 @@ type Message = {
 };
 
 export default function Doctor() {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: "Hi there! I'm your AI Plant Doctor. How can I help you and your plants today? You can ask me questions or upload a photo of a sick plant."
+      content: t("Hi there! I'm your AI Plant Doctor. How can I help you and your plants today? You can ask me questions or upload a photo of a sick plant.")
     }
   ]);
   const [input, setInput] = useState('');
@@ -82,7 +84,7 @@ export default function Doctor() {
 
       // If no text but image is provided, add a default prompt
       if (!userMessage.content && userMessage.image) {
-         contents.parts.push({ text: "What's wrong with this plant and how can I fix it?" });
+         contents.parts.push({ text: t("What's wrong with this plant and how can I fix it?") });
       }
 
       const response = await ai.models.generateContent({
@@ -96,7 +98,7 @@ export default function Doctor() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.text || "I'm sorry, I couldn't process that request.",
+        content: response.text || t("I'm sorry, I couldn't process that request."),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -105,7 +107,7 @@ export default function Doctor() {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I'm having trouble connecting right now. Please try again later."
+        content: t("I'm having trouble connecting right now. Please try again later.")
       }]);
     } finally {
       setIsLoading(false);
@@ -120,10 +122,10 @@ export default function Doctor() {
           <Bot className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="font-bold text-stone-800">AI Plant Doctor</h1>
+          <h1 className="font-bold text-stone-800">{t('AI Plant Doctor')}</h1>
           <p className="text-xs text-emerald-600 font-medium flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Online
+            {t('Online')}
           </p>
         </div>
       </div>
@@ -148,8 +150,8 @@ export default function Doctor() {
             <div className={clsx(
               "rounded-2xl p-4 shadow-sm",
               msg.role === 'user' 
-                ? "bg-emerald-600 text-white rounded-tr-sm" 
-                : "bg-white border border-stone-100 text-stone-800 rounded-tl-sm"
+                ? "bg-emerald-600 text-white rounded-tr-sm border border-transparent dark:border-white" 
+                : "bg-white border border-stone-100 text-stone-800 rounded-tl-sm dark:border-white"
             )}>
               {msg.image && (
                 <img src={msg.image} alt="Uploaded plant" className="max-w-full h-auto rounded-xl mb-3 border border-black/10" />
@@ -171,7 +173,7 @@ export default function Doctor() {
             </div>
             <div className="bg-white border border-stone-100 rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center gap-2">
               <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
-              <span className="text-sm text-stone-500 font-medium">Analyzing...</span>
+              <span className="text-sm text-stone-500 font-medium">{t('Analyzing...')}</span>
             </div>
           </div>
         )}
@@ -211,7 +213,7 @@ export default function Doctor() {
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about your plants..."
+              placeholder={t("Ask about your plants...")}
               className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-3 px-2 max-h-32 min-h-[44px] text-stone-800"
               rows={1}
               onKeyDown={(e) => {

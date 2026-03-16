@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Plus, Search, Filter, Droplets, Sun, Thermometer } from 'lucide-react';
 import { usePlants } from '../context/PlantContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function MyPlants() {
   const { plants } = usePlants();
+  const { t } = useLanguage();
 
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-stone-800">My Plants</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-800">{t('My Plants')}</h1>
         <Link to="/scan" className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors shadow-sm">
           <Plus className="w-5 h-5" />
         </Link>
@@ -21,13 +23,13 @@ export default function MyPlants() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
           <input 
             type="text" 
-            placeholder="Search plants..." 
+            placeholder={t('Search plants...')} 
             className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
           />
         </div>
         <button className="px-4 py-3 bg-white border border-stone-200 rounded-xl text-stone-600 hover:bg-stone-50 transition-colors flex items-center gap-2">
           <Filter className="w-5 h-5" />
-          <span className="hidden md:inline">Filter</span>
+          <span className="hidden md:inline">{t('Filter')}</span>
         </button>
       </div>
 
@@ -43,12 +45,12 @@ export default function MyPlants() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-stone-800 truncate text-lg">{plant.name}</h3>
-              <p className="text-sm text-stone-500 truncate">{plant.type}</p>
+              <p className="text-sm text-stone-500 truncate">{t(plant.type)}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-1 rounded-md">{plant.location}</span>
+                <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-1 rounded-md">{t(plant.location)}</span>
                 <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md flex items-center gap-1">
                   <Droplets className="w-3 h-3" />
-                  {plant.nextWater}
+                  {t(plant.nextWater)}
                 </span>
               </div>
             </div>

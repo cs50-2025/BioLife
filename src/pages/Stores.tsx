@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { MapPin, Navigation, Search, Loader2, Compass, ExternalLink } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Stores() {
-  const [query, setQuery] = useState('plant nurseries and garden centers');
+  const { t } = useLanguage();
+  const [query, setQuery] = useState(t('plant nurseries and garden centers'));
   const [cityState, setCityState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resultText, setResultText] = useState('');
@@ -30,7 +32,7 @@ export default function Stores() {
         }
       });
 
-      setResultText(response.text || 'No results found.');
+      setResultText(response.text || t('No results found.'));
 
       const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
       if (chunks) {
@@ -44,7 +46,7 @@ export default function Stores() {
       }
     } catch (error) {
       console.error("Search error:", error);
-      setResultText('An error occurred while searching for stores.');
+      setResultText(t('An error occurred while searching for stores.'));
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +56,8 @@ export default function Stores() {
     <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-stone-800">Nearby Stores</h1>
-        <p className="text-stone-500 mt-1">Find the best plant nurseries and gardening supplies in your area.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-800">{t('Nearby Stores')}</h1>
+        <p className="text-stone-500 mt-1">{t('Find the best plant nurseries and gardening supplies in your area.')}</p>
       </div>
 
       {/* Search Form */}
@@ -67,7 +69,7 @@ export default function Stores() {
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="What are you looking for?" 
+              placeholder={t("What are you looking for?")}
               className="w-full pl-12 pr-4 py-4 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm text-lg"
             />
           </div>
@@ -77,7 +79,7 @@ export default function Stores() {
               type="text" 
               value={cityState}
               onChange={(e) => setCityState(e.target.value)}
-              placeholder="City and State (e.g., Austin, TX)" 
+              placeholder={t("City and State (e.g., Austin, TX)")}
               required
               className="w-full pl-12 pr-4 py-4 bg-white border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm text-lg"
             />
@@ -88,7 +90,7 @@ export default function Stores() {
           disabled={isLoading || !cityState.trim()}
           className="w-full md:w-auto md:self-end px-8 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-colors disabled:opacity-70 flex items-center justify-center"
         >
-          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Search Locations'}
+          {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : t('Search Locations')}
         </button>
       </form>
 
@@ -98,7 +100,7 @@ export default function Stores() {
           {isLoading && !resultText ? (
             <div className="flex flex-col items-center justify-center py-12 text-stone-400">
               <Compass className="w-12 h-12 animate-pulse mb-4 text-emerald-500" />
-              <p className="font-medium">Searching nearby areas...</p>
+              <p className="font-medium">{t('Searching nearby areas...')}</p>
             </div>
           ) : (
             <>
@@ -110,7 +112,7 @@ export default function Stores() {
                 <div className="mt-8 space-y-4">
                   <h3 className="text-lg font-bold text-stone-800 flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-emerald-600" />
-                    Locations Found
+                    {t('Locations Found')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {places.map((place, idx) => (
@@ -123,7 +125,7 @@ export default function Stores() {
                       >
                         <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-stone-800 group-hover:text-emerald-700 transition-colors">
-                            {place.title || 'Store Location'}
+                            {place.title || t('Store Location')}
                           </h4>
                           <ExternalLink className="w-4 h-4 text-stone-400 group-hover:text-emerald-600" />
                         </div>
@@ -134,7 +136,7 @@ export default function Stores() {
                         )}
                         <div className="flex items-center gap-2 mt-3 text-xs font-semibold text-emerald-600">
                           <Navigation className="w-3 h-3" />
-                          View on Google Maps
+                          {t('View on Google Maps')}
                         </div>
                       </a>
                     ))}
