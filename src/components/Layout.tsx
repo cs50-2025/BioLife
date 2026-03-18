@@ -13,15 +13,17 @@ export default function Layout() {
   const { t, language, setLanguage } = useLanguage();
   useNotifications();
 
-  const allNavItems = [
+  const mobileNavItems = [
     { to: '/', icon: Home, label: t('Home') },
     { to: '/plants', icon: Leaf, label: t('My Plants') },
-    { to: '/scan', icon: Camera, label: t('Scan') },
+    { to: '/add', icon: Camera, label: t('Add Plant') },
+    { to: '/profile', icon: User, label: t('Profile') },
+  ];
+
+  const desktopNavItems = [
+    ...mobileNavItems,
     { to: '/schedule', icon: Calendar, label: t('Schedule') },
     { to: '/doctor', icon: MessageCircle, label: t('Doctor') || 'Doctor' },
-    { to: '/guide', icon: BookOpen, label: t('Care Guide') || 'Care Guide' },
-    { to: '/stores', icon: MapPin, label: t('Nearby Stores') || 'Nearby Stores' },
-    { to: '/profile', icon: User, label: t('Profile') },
   ];
 
   return (
@@ -36,7 +38,7 @@ export default function Layout() {
         </div>
         
         <div className="flex flex-col gap-1 flex-1 overflow-y-auto px-2">
-          {allNavItems.slice(0, 5).map((item) => (
+          {desktopNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -119,8 +121,8 @@ export default function Layout() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 w-full bg-white/80 backdrop-blur-md border-t border-stone-200 z-50 md:hidden pb-safe">
-        <div className="flex overflow-x-auto hide-scrollbar px-4 py-2 gap-2 overscroll-x-contain items-center" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {allNavItems.map((item) => (
+        <div className="flex overflow-x-auto hide-scrollbar px-4 py-2 gap-2 overscroll-x-contain items-center justify-around" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {mobileNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

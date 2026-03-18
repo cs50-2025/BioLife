@@ -1,11 +1,13 @@
 import { Settings, Award, Droplets, Leaf, ChevronRight, Bell, Shield, LogOut, Moon, Sun, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePlants } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const { user, logout, toggleDarkMode, updateProfilePicture, toggleNotifications } = useAuth();
+  const { plants, streak } = usePlants();
   const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -27,9 +29,9 @@ export default function Profile() {
   };
 
   const stats = [
-    { label: t('Plants'), value: '12', icon: Leaf, color: 'text-emerald-500 bg-emerald-50' },
-    { label: t('Care Streak'), value: '14 Days', icon: Droplets, color: 'text-blue-500 bg-blue-50' },
-    { label: t('Scans'), value: '45', icon: Award, color: 'text-amber-500 bg-amber-50' },
+    { label: t('Plants'), value: plants.length.toString(), icon: Leaf, color: 'text-emerald-500 bg-emerald-50' },
+    { label: t('Care Streak'), value: `${streak} ${t('Days')}`, icon: Droplets, color: 'text-blue-500 bg-blue-50' },
+    { label: t('Scans'), value: '12', icon: Award, color: 'text-amber-500 bg-amber-50' },
   ];
 
   const achievements = [

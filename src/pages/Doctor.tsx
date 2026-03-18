@@ -88,7 +88,7 @@ export default function Doctor() {
       }
 
       const response = await ai.models.generateContent({
-        model: userMessage.image ? 'gemini-2.5-flash' : 'gemini-3-flash-preview',
+        model: 'gemini-3-flash-preview',
         contents: contents,
         config: {
           systemInstruction: "You are an expert botanist and plant care assistant named BioLife Doctor. Provide helpful, concise, and accurate advice for plant care, diagnosing diseases, and general gardening. Format your responses with markdown for readability.",

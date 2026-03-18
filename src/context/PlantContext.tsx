@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { format, addDays } from 'date-fns';
 import { useAuth } from './AuthContext';
+import { db } from '../firebase';
+import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
 
 export type Plant = {
   id: string;
@@ -15,7 +17,9 @@ export type Plant = {
   sunlight: string;
   temperature: string;
   humidity: string;
+  wateringFrequency?: number;
   history: any[];
+  createdAt?: string;
 };
 
 export type Task = {
@@ -31,84 +35,58 @@ export type Task = {
 
 type PlantContextType = {
   plants: Plant[];
-  addPlant: (plant: Plant) => void;
-  deletePlant: (id: string) => void;
-  updatePlant: (id: string, updates: Partial<Plant>) => void;
+  addPlant: (plant: Plant) => Promise<void>;
+  deletePlant: (id: string) => Promise<void>;
+  updatePlant: (id: string, updates: Partial<Plant>) => Promise<void>;
   schedule: Task[];
   setSchedule: (schedule: Task[]) => void;
   addTask: (task: Task) => void;
+  streak: number;
 };
 
 const PlantContext = createContext<PlantContextType | undefined>(undefined);
 
 export function PlantProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const [plants, setPlants] = useState<Plant[]>([]);
   const [schedule, setSchedule] = useState<Task[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load data when user changes
+  // Load plants from Firestore
+  useEffect(() => {
+    if (user && isAuthReady) {
+      const q = query(collection(db, 'plants'), where('userId', '==', user.id));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const loadedPlants: Plant[] = [];
+        snapshot.forEach((doc) => {
+          loadedPlants.push({ id: doc.id, ...doc.data() } as Plant);
+        });
+        setPlants(loadedPlants);
+      }, (error) => {
+        console.error("Error fetching plants:", error);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setPlants([]);
+    }
+  }, [user, isAuthReady]);
+
+  // Load schedule from localStorage (or could be moved to Firestore later)
   useEffect(() => {
     if (user) {
-      setIsLoaded(false);
-      const storedPlants = localStorage.getItem(`plant_app_plants_${user.id}`);
       const storedSchedule = localStorage.getItem(`plant_app_schedule_${user.id}`);
-      
-      if (storedPlants) {
-        setPlants(JSON.parse(storedPlants));
-      } else {
-        // Default plants for new users
-        const defaultPlants: Plant[] = [
-          { 
-            id: '1', 
-            userId: user.id,
-            name: 'Monstera Deliciosa', 
-            type: 'Swiss Cheese Plant', 
-            health: 92, 
-            image: 'https://picsum.photos/seed/monstera/400/400', 
-            location: 'Living Room', 
-            nextWater: 'Today', 
-            lastWatered: '3 days ago', 
-            sunlight: 'Bright indirect', 
-            temperature: '18-30°C', 
-            humidity: 'High (60%+)', 
-            history: [
-              { date: 'Oct 12', event: 'Watered', type: 'water' },
-              { date: 'Oct 05', event: 'Fertilized', type: 'feed' },
-              { date: 'Sep 28', event: 'Health Scan: 92%', type: 'scan' },
-            ] 
-          },
-          { id: '2', userId: user.id, name: 'Snake Plant', type: 'Sansevieria', health: 100, image: 'https://picsum.photos/seed/snakeplant/400/400', location: 'Bedroom', nextWater: 'In 3 days', lastWatered: '10 days ago', sunlight: 'Low to bright indirect', temperature: '15-30°C', humidity: 'Average', history: [] },
-        ];
-        setPlants(defaultPlants);
-        localStorage.setItem(`plant_app_plants_${user.id}`, JSON.stringify(defaultPlants));
-      }
-
       if (storedSchedule) {
         setSchedule(JSON.parse(storedSchedule));
       } else {
-        // Default schedule for new users
-        const defaultSchedule: Task[] = [
-          { id: '1', userId: user.id, plant: 'Monstera Deliciosa', time: 'Morning', amount: '150ml', completed: false, date: format(new Date(), 'yyyy-MM-dd') },
-          { id: '2', userId: user.id, plant: 'Snake Plant', time: 'Afternoon', amount: '50ml', completed: true, date: format(new Date(), 'yyyy-MM-dd') },
-        ];
-        setSchedule(defaultSchedule);
-        localStorage.setItem(`plant_app_schedule_${user.id}`, JSON.stringify(defaultSchedule));
+        setSchedule([]);
       }
       setIsLoaded(true);
     } else {
-      setPlants([]);
       setSchedule([]);
       setIsLoaded(false);
     }
   }, [user]);
-
-  // Save data when it changes
-  useEffect(() => {
-    if (user && isLoaded) {
-      localStorage.setItem(`plant_app_plants_${user.id}`, JSON.stringify(plants));
-    }
-  }, [plants, user, isLoaded]);
 
   useEffect(() => {
     if (user && isLoaded) {
@@ -116,18 +94,58 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
     }
   }, [schedule, user, isLoaded]);
 
-  const addPlant = (plant: Plant) => {
+  const addPlant = async (plant: Plant) => {
     if (!user) return;
-    setPlants(prev => [...prev, { ...plant, userId: user.id }]);
+    const plantId = plant.id || Date.now().toString();
+    const newPlant = { 
+      ...plant, 
+      id: plantId,
+      userId: user.id,
+      createdAt: new Date().toISOString(),
+      wateringFrequency: plant.wateringFrequency || 7 // default to 7 days if not provided
+    };
+    
+    // Optimistic update
+    setPlants(prev => [...prev, newPlant]);
+    
+    try {
+      await setDoc(doc(db, 'plants', plantId), newPlant);
+    } catch (error) {
+      console.error("Error adding plant:", error);
+      // Revert optimistic update on failure
+      setPlants(prev => prev.filter(p => p.id !== plantId));
+    }
   };
 
-  const deletePlant = (id: string) => {
+  const deletePlant = async (id: string) => {
+    if (!user) return;
+    
+    // Optimistic update
+    const previousPlants = [...plants];
     setPlants(prev => prev.filter(p => p.id !== id));
     setSchedule(prev => prev.filter(t => t.plant !== plants.find(p => p.id === id)?.name));
+    
+    try {
+      await deleteDoc(doc(db, 'plants', id));
+    } catch (error) {
+      console.error("Error deleting plant:", error);
+      setPlants(previousPlants);
+    }
   };
 
-  const updatePlant = (id: string, updates: Partial<Plant>) => {
+  const updatePlant = async (id: string, updates: Partial<Plant>) => {
+    if (!user) return;
+    
+    // Optimistic update
+    const previousPlants = [...plants];
     setPlants(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    
+    try {
+      await updateDoc(doc(db, 'plants', id), updates);
+    } catch (error) {
+      console.error("Error updating plant:", error);
+      setPlants(previousPlants);
+    }
   };
 
   const addTask = (task: Task) => {
@@ -135,8 +153,60 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
     setSchedule(prev => [...prev, { ...task, userId: user.id }]);
   };
 
+  // Calculate streak based on completed tasks
+  const calculateStreak = () => {
+    if (schedule.length === 0) return 0;
+
+    const completedDates = [...new Set(
+      schedule
+        .filter(t => t.completed)
+        .map(t => t.date)
+    )].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+    if (completedDates.length === 0) return 0;
+
+    let currentStreak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let checkDate = new Date(today);
+    
+    // Check if today is completed
+    const todayStr = format(today, 'yyyy-MM-dd');
+    if (completedDates.includes(todayStr)) {
+      currentStreak++;
+      checkDate = addDays(checkDate, -1);
+    } else {
+      // If today is not completed, check if yesterday is completed
+      const yesterday = addDays(today, -1);
+      const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
+      if (completedDates.includes(yesterdayStr)) {
+        checkDate = yesterday;
+      } else {
+        return 0; // Streak broken
+      }
+    }
+
+    // Count backwards for consecutive days
+    while (true) {
+      const checkDateStr = format(checkDate, 'yyyy-MM-dd');
+      if (completedDates.includes(checkDateStr)) {
+        if (checkDateStr !== todayStr) { // Don't double count today
+          currentStreak++;
+        }
+        checkDate = addDays(checkDate, -1);
+      } else {
+        break;
+      }
+    }
+
+    return currentStreak;
+  };
+
+  const streak = calculateStreak();
+
   return (
-    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask }}>
+    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, streak }}>
       {children}
     </PlantContext.Provider>
   );

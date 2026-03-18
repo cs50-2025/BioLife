@@ -14,8 +14,26 @@ export default function PlantProfile() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [adjustFrequency, setAdjustFrequency] = useState(7);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editType, setEditType] = useState('');
 
   const plant = plants.find(p => p.id === id);
+
+  const handleEditOpen = () => {
+    if (plant) {
+      setEditName(plant.name);
+      setEditType(plant.type);
+      setShowEditModal(true);
+    }
+  };
+
+  const handleEditSave = () => {
+    if (plant && id) {
+      updatePlant(id, { name: editName, type: editType });
+      setShowEditModal(false);
+    }
+  };
 
   const handleDelete = () => {
     if (window.confirm(`${t('Are you sure you want to delete')} ${plant?.name}?`)) {
@@ -151,7 +169,7 @@ export default function PlantProfile() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex gap-2">
-            <button className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-colors">
+            <button onClick={handleEditOpen} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-colors">
               <Edit3 className="w-4 h-4" />
             </button>
             <button onClick={handleDelete} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-colors">
@@ -382,6 +400,48 @@ export default function PlantProfile() {
               className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
             >
               {t('Save Schedule')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Plant Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-stone-900">{t('Edit Plant')}</h3>
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-stone-100 rounded-full">
+                <X className="w-5 h-5 text-stone-500" />
+              </button>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-1">{t('Plant Name')}</label>
+                <input 
+                  type="text" 
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-1">{t('Plant Type')}</label>
+                <input 
+                  type="text" 
+                  value={editType}
+                  onChange={(e) => setEditType(e.target.value)}
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button 
+              onClick={handleEditSave}
+              className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
+            >
+              {t('Save Changes')}
             </button>
           </div>
         </div>

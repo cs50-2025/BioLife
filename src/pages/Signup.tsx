@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Leaf, AlertCircle } from 'lucide-react';
@@ -8,9 +8,15 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { signup } = useAuth();
+  const { signup, user, isAuthReady } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (isAuthReady && user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, isAuthReady, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
