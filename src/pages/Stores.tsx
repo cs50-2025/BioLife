@@ -22,7 +22,7 @@ export default function Stores() {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const finalQuery = `${query} in ${cityState}`;
+      const finalQuery = `Find ${query} in ${cityState}. Please rank the recommendations by considering price, distance, quality, and eco-friendliness. Provide a brief summary of why each store is recommended based on these criteria.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',

@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 
 export default function TutorialPopup() {
   const { t } = useLanguage();
-  const { user, isAuthReady } = useAuth();
+  const { user, isAuthReady, updateProfile } = useAuth();
   const [step, setStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -45,9 +43,7 @@ export default function TutorialPopup() {
     setIsVisible(false);
     if (user) {
       try {
-        await updateDoc(doc(db, 'users', user.id), {
-          tutorialSeen: true
-        });
+        await updateProfile({ tutorialSeen: true });
       } catch (error) {
         console.error("Error updating tutorial status:", error);
       }

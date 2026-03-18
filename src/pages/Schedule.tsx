@@ -1,17 +1,18 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Droplets, CheckCircle, Circle, Edit2, Trash2, Plus, Save, X, Camera } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Droplets, CheckCircle, Circle, Edit2, Trash2, Plus, Save, X, Camera, Sparkles, Loader2 } from 'lucide-react';
 import { format, addDays, startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import { clsx } from 'clsx';
 import { usePlants, Task } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Schedule() {
-  const { schedule, setSchedule } = usePlants();
+  const { schedule, setSchedule, optimizeSchedule } = usePlants();
   const { t } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ title: '', time: '', amount: '' });
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
   // Generate week days
   const startDate = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -125,16 +126,30 @@ export default function Schedule() {
       </div>
 
       {/* AI Suggestion Banner */}
-      <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-4 border border-blue-100 flex items-start gap-4 shadow-sm">
-        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm text-blue-500">
-          <Droplets className="w-5 h-5" />
+      <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-4 border border-blue-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm text-blue-500">
+            <Droplets className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-stone-800 text-sm mb-1">{t('AI Smart Schedule Available')}</h3>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              {t('Schedules can be automatically adjusted based on your local weather, plant type, and recent health scans.')}
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-bold text-stone-800 text-sm mb-1">{t('AI Smart Schedule Active')}</h3>
-          <p className="text-xs text-stone-600 leading-relaxed">
-            {t('Schedules are automatically adjusted based on your local weather, plant type, and recent health scans.')}
-          </p>
-        </div>
+        <button 
+          onClick={async () => {
+            setIsOptimizing(true);
+            await optimizeSchedule();
+            setTimeout(() => setIsOptimizing(false), 1000); // Fake delay for UX
+          }}
+          disabled={isOptimizing}
+          className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-70 shrink-0"
+        >
+          {isOptimizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+          {isOptimizing ? t('Optimizing...') : t('Optimize Now')}
+        </button>
       </div>
 
       {/* Tasks List */}

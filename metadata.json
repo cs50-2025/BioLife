@@ -1,5 +1,5 @@
 {
-  "name": "BioLife",
+  "name": "BioLife V2",
   "description": "AI-powered plant care application that helps users keep plants healthy by scanning them and giving personalized care instructions.",
   "requestFramePermissions": [
     "camera",

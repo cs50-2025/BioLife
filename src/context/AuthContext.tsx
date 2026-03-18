@@ -1,13 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db } from '../firebase';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 export type User = {
   id: string;
@@ -27,96 +18,106 @@ type AuthContextType = {
   updateProfilePicture: (url: string) => Promise<void>;
   toggleDarkMode: () => Promise<void>;
   toggleNotifications: () => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Helper to convert username to a dummy email for Firebase Auth
-const getDummyEmail = (username: string) => `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@biolife.local`;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data() as Omit<User, 'id'>;
-            const fullUser = { id: firebaseUser.uid, ...userData };
-            setUser(fullUser);
-            if (fullUser.darkMode) {
-              document.documentElement.classList.add('dark');
-            } else {
-              document.documentElement.classList.remove('dark');
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+    const storedUser = localStorage.getItem('biolife_user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        if (parsedUser.darkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
         }
-      } else {
-        setUser(null);
-        document.documentElement.classList.remove('dark');
+      } catch (error) {
+        console.error("Error parsing user data:", error);
       }
-      setIsAuthReady(true);
-    });
-
-    return () => unsubscribe();
+    }
+    setIsAuthReady(true);
   }, []);
+
+  const saveUser = (newUser: User | null) => {
+    setUser(newUser);
+    if (newUser) {
+      localStorage.setItem('biolife_user', JSON.stringify(newUser));
+    } else {
+      localStorage.removeItem('biolife_user');
+    }
+  };
 
   const login = async (name: string, password?: string) => {
     if (!password) throw new Error('Password is required');
-    const email = getDummyEmail(name);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        throw new Error('Incorrect username or password.');
-      }
-      throw error;
+    
+    // Mock login logic
+    const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+    const userRecord = storedUsers[name.toLowerCase()];
+    
+    if (!userRecord || userRecord.password !== password) {
+      throw new Error('Incorrect username or password.');
+    }
+    
+    const loggedInUser: User = {
+      id: userRecord.id,
+      name: userRecord.name,
+      profilePicture: userRecord.profilePicture,
+      darkMode: userRecord.darkMode || false,
+      notificationsEnabled: userRecord.notificationsEnabled || false,
+      tutorialSeen: userRecord.tutorialSeen || false,
+    };
+    
+    saveUser(loggedInUser);
+    if (loggedInUser.darkMode) {
+      document.documentElement.classList.add('dark');
     }
   };
 
   const signup = async (name: string, password?: string) => {
     if (!password) throw new Error('Password is required');
-    const email = getDummyEmail(name);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const newUser: Omit<User, 'id'> = {
-        name,
-        darkMode: false,
-        notificationsEnabled: false,
-        tutorialSeen: false,
-      };
-      
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        uid: userCredential.user.uid,
-        username: name,
-        createdAt: new Date().toISOString(),
-        ...newUser
-      });
-      
-      await updateProfile(userCredential.user, { displayName: name });
-      
-    } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        throw new Error('Username already exists. Please log in.');
-      }
-      throw error;
+    
+    const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+    if (storedUsers[name.toLowerCase()]) {
+      throw new Error('Username already exists. Please log in.');
     }
+    
+    const newUser: User = {
+      id: Date.now().toString(),
+      name,
+      darkMode: false,
+      notificationsEnabled: false,
+      tutorialSeen: false,
+    };
+    
+    storedUsers[name.toLowerCase()] = { ...newUser, password };
+    localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
+    
+    saveUser(newUser);
   };
 
   const logout = async () => {
-    await signOut(auth);
+    saveUser(null);
+    document.documentElement.classList.remove('dark');
   };
 
   const updateProfilePicture = async (url: string) => {
     if (user) {
       const updatedUser = { ...user, profilePicture: url };
-      setUser(updatedUser);
-      await updateDoc(doc(db, 'users', user.id), { profilePicture: url });
+      saveUser(updatedUser);
+      
+      // Update in mock DB
+      const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+      if (storedUsers[user.name.toLowerCase()]) {
+        storedUsers[user.name.toLowerCase()].profilePicture = url;
+        localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
+      }
     }
   };
 
@@ -124,13 +125,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const newDarkMode = !user.darkMode;
       const updatedUser = { ...user, darkMode: newDarkMode };
-      setUser(updatedUser);
+      saveUser(updatedUser);
+      
       if (newDarkMode) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
-      await updateDoc(doc(db, 'users', user.id), { darkMode: newDarkMode });
+      
+      // Update in mock DB
+      const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+      if (storedUsers[user.name.toLowerCase()]) {
+        storedUsers[user.name.toLowerCase()].darkMode = newDarkMode;
+        localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
+      }
     }
   };
 
@@ -141,8 +149,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const permission = await Notification.requestPermission();
           if (permission === 'granted') {
             const updatedUser = { ...user, notificationsEnabled: true };
-            setUser(updatedUser);
-            await updateDoc(doc(db, 'users', user.id), { notificationsEnabled: true });
+            saveUser(updatedUser);
+            
+            const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+            if (storedUsers[user.name.toLowerCase()]) {
+              storedUsers[user.name.toLowerCase()].notificationsEnabled = true;
+              localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
+            }
           } else {
             alert('Notification permission denied. Please enable it in your browser settings.');
           }
@@ -151,14 +164,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         const updatedUser = { ...user, notificationsEnabled: false };
-        setUser(updatedUser);
-        await updateDoc(doc(db, 'users', user.id), { notificationsEnabled: false });
+        saveUser(updatedUser);
+        
+        const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+        if (storedUsers[user.name.toLowerCase()]) {
+          storedUsers[user.name.toLowerCase()].notificationsEnabled = false;
+          localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
+        }
+      }
+    }
+  };
+
+  const updateProfile = async (updates: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      saveUser(updatedUser);
+      
+      const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
+      if (storedUsers[user.name.toLowerCase()]) {
+        storedUsers[user.name.toLowerCase()] = { ...storedUsers[user.name.toLowerCase()], ...updates };
+        localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
       }
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady, login, signup, logout, updateProfilePicture, toggleDarkMode, toggleNotifications }}>
+    <AuthContext.Provider value={{ user, isAuthReady, login, signup, logout, updateProfilePicture, toggleDarkMode, toggleNotifications, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

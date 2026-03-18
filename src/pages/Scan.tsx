@@ -53,19 +53,32 @@ export default function Scan() {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       
       const prompt = `
-        Analyze this plant image and provide a JSON response with the following structure:
+        Analyze this plant image as an expert botanist and plant pathologist.
+        Provide a detailed JSON response with the following structure:
         {
-          "plantType": "Name of the plant",
-          "healthScore": number between 0 and 100,
-          "diagnosis": "Brief description of its current state (e.g., 'Slight dehydration', 'Healthy', 'Pest infestation')",
-          "recommendation": "Specific actionable advice for care",
-          "issues": ["List of possible problems, if any"],
-          "sunlight": "e.g., Bright indirect",
-          "temperature": "e.g., 18-30°C",
-          "humidity": "e.g., High (60%+)",
-          "wateringFrequencyDays": number (e.g., 7 for every 7 days)
+          "plantType": "Scientific and common name of the plant",
+          "confidence": number between 0 and 100 representing your confidence in the identification,
+          "healthScore": number between 0 and 100 representing overall health,
+          "diagnosis": "Detailed explanation of its current state, including reasoning based on visual evidence (e.g., 'Leaves show yellowing at the edges indicating slight dehydration or nutrient deficiency')",
+          "recommendation": "Specific, actionable, step-by-step advice for care to improve or maintain health",
+          "issues": [
+            {
+              "issue": "Name of the problem (e.g., 'Spider Mites', 'Underwatering')",
+              "severity": "Low", "Medium", or "High",
+              "action": "How to fix it"
+            }
+          ],
+          "carePlan": {
+            "sunlight": "Specific light requirements (e.g., 'Bright indirect light, avoid harsh afternoon sun')",
+            "temperature": "Ideal temperature range (e.g., '18-24°C')",
+            "humidity": "Ideal humidity (e.g., 'High, 60-80%')",
+            "wateringFrequencyDays": number (e.g., 7),
+            "wateringInstructions": "How to water (e.g., 'Water thoroughly when top 2 inches of soil are dry')",
+            "soilType": "Recommended soil mix",
+            "fertilizer": "When and what to feed"
+          }
         }
-        Only return the JSON object, nothing else.
+        Only return the JSON object, nothing else. Do not wrap in markdown code blocks.
       `;
 
       const response = await ai.models.generateContent({
@@ -86,7 +99,13 @@ export default function Scan() {
         }
       });
 
-      const jsonStr = response.text?.trim();
+      let jsonStr = response.text?.trim() || '';
+      if (jsonStr.startsWith('```json')) {
+        jsonStr = jsonStr.replace(/^```json\n/, '').replace(/\n```$/, '');
+      } else if (jsonStr.startsWith('```')) {
+        jsonStr = jsonStr.replace(/^```\n/, '').replace(/\n```$/, '');
+      }
+
       if (jsonStr) {
         setResult(JSON.parse(jsonStr));
       }
@@ -94,14 +113,20 @@ export default function Scan() {
       console.error('Error analyzing image:', error);
       setResult({
         plantType: 'Unknown Plant',
+        confidence: 0,
         healthScore: 0,
-        diagnosis: 'Failed to analyze image.',
-        recommendation: 'Please try again with a clearer photo.',
-        issues: ['Analysis error'],
-        sunlight: 'Unknown',
-        temperature: 'Unknown',
-        humidity: 'Unknown',
-        wateringFrequencyDays: 7
+        diagnosis: 'Failed to analyze image. Please ensure the image is clear and well-lit.',
+        recommendation: 'Please try taking another photo from a different angle.',
+        issues: [],
+        carePlan: {
+          sunlight: 'Unknown',
+          temperature: 'Unknown',
+          humidity: 'Unknown',
+          wateringFrequencyDays: 7,
+          wateringInstructions: 'Check soil moisture before watering.',
+          soilType: 'Standard potting mix',
+          fertilizer: 'Unknown'
+        }
       });
     } finally {
       setIsScanning(false);
@@ -120,16 +145,17 @@ export default function Scan() {
       location: locationInput,
       nextWater: 'Tomorrow',
       lastWatered: 'Unknown',
-      sunlight: result.sunlight || 'Moderate',
-      temperature: result.temperature || 'Room Temp',
-      humidity: result.humidity || 'Average',
+      sunlight: result.carePlan?.sunlight || 'Moderate',
+      temperature: result.carePlan?.temperature || 'Room Temp',
+      humidity: result.carePlan?.humidity || 'Average',
+      wateringFrequency: result.carePlan?.wateringFrequencyDays || 7,
       history: [{ date: format(new Date(), 'MMM dd'), event: `Health Scan: ${result.healthScore}%`, type: 'scan' }]
     };
 
     addPlant(newPlant);
 
     const today = new Date();
-    const freq = result.wateringFrequencyDays || 7;
+    const freq = result.carePlan?.wateringFrequencyDays || 7;
     
     // Generate watering tasks for the next 30 days based on frequency
     for (let i = 1; i <= 30; i += freq) {
@@ -235,6 +261,9 @@ export default function Scan() {
                   )}>
                     {t('Health')}: {result.healthScore}%
                   </span>
+                  <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-1 rounded-md">
+                    {result.confidence}% {t('Match')}
+                  </span>
                 </div>
               </div>
               <div className={clsx(
@@ -250,45 +279,70 @@ export default function Scan() {
             <div className="space-y-4">
               <div className="bg-stone-50 p-4 rounded-2xl border border-stone-100">
                 <h3 className="text-sm font-bold text-stone-500 uppercase tracking-wider mb-2">{t('Diagnosis')}</h3>
-                <p className="text-stone-800 font-medium">{result.diagnosis}</p>
+                <p className="text-stone-800 font-medium leading-relaxed">{result.diagnosis}</p>
               </div>
 
               <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
                 <h3 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">{t('Recommendation')}</h3>
-                <p className="text-emerald-900 font-medium">{result.recommendation}</p>
+                <p className="text-emerald-900 font-medium leading-relaxed">{result.recommendation}</p>
               </div>
 
               {result.issues && result.issues.length > 0 && (
                 <div className="bg-red-50 p-4 rounded-2xl border border-red-100">
-                  <h3 className="text-sm font-bold text-red-600 uppercase tracking-wider mb-2">{t('Possible Issues')}</h3>
-                  <ul className="list-disc list-inside text-red-900 font-medium space-y-1">
-                    {result.issues.map((issue: string, idx: number) => (
-                      <li key={idx}>{issue}</li>
+                  <h3 className="text-sm font-bold text-red-600 uppercase tracking-wider mb-3">{t('Identified Issues')}</h3>
+                  <div className="space-y-3">
+                    {result.issues.map((issue: any, idx: number) => (
+                      <div key={idx} className="bg-white p-3 rounded-xl border border-red-100/50 shadow-sm">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-bold text-red-900">{issue.issue}</span>
+                          <span className={clsx(
+                            "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full",
+                            issue.severity === 'High' ? "bg-red-100 text-red-700" :
+                            issue.severity === 'Medium' ? "bg-orange-100 text-orange-700" :
+                            "bg-yellow-100 text-yellow-700"
+                          )}>
+                            {issue.severity}
+                          </span>
+                        </div>
+                        <p className="text-sm text-stone-600">{issue.action}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
 
-              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-3">{t('Care Requirements')}</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
-                    <Sun className="w-6 h-6 text-amber-500 mb-2" />
-                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Sunlight')}</span>
-                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.sunlight)}</span>
+              {result.carePlan && (
+                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                  <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-3">{t('Care Requirements')}</h3>
+                  <div className="grid grid-cols-3 gap-3 mb-3">
+                    <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                      <Sun className="w-6 h-6 text-amber-500 mb-2" />
+                      <span className="text-[10px] font-bold text-stone-500 uppercase">{t('Sunlight')}</span>
+                      <span className="text-xs font-medium text-stone-800 mt-1 line-clamp-2">{t(result.carePlan.sunlight)}</span>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                      <Thermometer className="w-6 h-6 text-orange-500 mb-2" />
+                      <span className="text-[10px] font-bold text-stone-500 uppercase">{t('Temp')}</span>
+                      <span className="text-xs font-medium text-stone-800 mt-1 line-clamp-2">{t(result.carePlan.temperature)}</span>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                      <Droplets className="w-6 h-6 text-blue-500 mb-2" />
+                      <span className="text-[10px] font-bold text-stone-500 uppercase">{t('Humidity')}</span>
+                      <span className="text-xs font-medium text-stone-800 mt-1 line-clamp-2">{t(result.carePlan.humidity)}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
-                    <Thermometer className="w-6 h-6 text-orange-500 mb-2" />
-                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Temp')}</span>
-                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.temperature)}</span>
-                  </div>
-                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
-                    <Droplets className="w-6 h-6 text-blue-500 mb-2" />
-                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Humidity')}</span>
-                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.humidity)}</span>
+                  <div className="bg-white p-3 rounded-xl shadow-sm border border-blue-50 space-y-2">
+                    <div>
+                      <span className="text-xs font-bold text-stone-500 uppercase block mb-1">{t('Watering')}</span>
+                      <p className="text-sm text-stone-800">{result.carePlan.wateringInstructions}</p>
+                    </div>
+                    <div className="pt-2 border-t border-stone-100">
+                      <span className="text-xs font-bold text-stone-500 uppercase block mb-1">{t('Soil & Food')}</span>
+                      <p className="text-sm text-stone-800">{result.carePlan.soilType} • {result.carePlan.fertilizer}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="mt-8 flex gap-3">

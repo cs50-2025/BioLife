@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { format, addDays } from 'date-fns';
 import { useAuth } from './AuthContext';
-import { db } from '../firebase';
-import { collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
 
 export type Plant = {
   id: string;
@@ -42,6 +40,7 @@ type PlantContextType = {
   schedule: Task[];
   setSchedule: (schedule: Task[]) => void;
   addTask: (task: Task) => void;
+  optimizeSchedule: () => Promise<void>;
   streak: number;
   totalScans: number;
 };
@@ -54,29 +53,23 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
   const [schedule, setSchedule] = useState<Task[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load plants from Firestore
+  // Load plants from localStorage
   useEffect(() => {
     if (user && isAuthReady) {
-      const q = query(collection(db, 'plants'), where('userId', '==', user.id));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const loadedPlants: Plant[] = [];
-        snapshot.forEach((doc) => {
-          loadedPlants.push({ id: doc.id, ...doc.data() } as Plant);
-        });
-        setPlants(loadedPlants);
-      }, (error) => {
-        console.error("Error fetching plants:", error);
-      });
-
-      return () => unsubscribe();
+      const storedPlants = localStorage.getItem(`plant_app_plants_${user.id}`);
+      if (storedPlants) {
+        setPlants(JSON.parse(storedPlants));
+      } else {
+        setPlants([]);
+      }
     } else {
       setPlants([]);
     }
   }, [user, isAuthReady]);
 
-  // Load schedule from localStorage (or could be moved to Firestore later)
+  // Load schedule from localStorage
   useEffect(() => {
-    if (user) {
+    if (user && isAuthReady) {
       const storedSchedule = localStorage.getItem(`plant_app_schedule_${user.id}`);
       if (storedSchedule) {
         setSchedule(JSON.parse(storedSchedule));
@@ -88,8 +81,16 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
       setSchedule([]);
       setIsLoaded(false);
     }
-  }, [user]);
+  }, [user, isAuthReady]);
 
+  // Save plants to localStorage
+  useEffect(() => {
+    if (user && isLoaded) {
+      localStorage.setItem(`plant_app_plants_${user.id}`, JSON.stringify(plants));
+    }
+  }, [plants, user, isLoaded]);
+
+  // Save schedule to localStorage
   useEffect(() => {
     if (user && isLoaded) {
       localStorage.setItem(`plant_app_schedule_${user.id}`, JSON.stringify(schedule));
@@ -107,52 +108,73 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
       wateringFrequency: plant.wateringFrequency || 7 // default to 7 days if not provided
     };
     
-    // Optimistic update
     setPlants(prev => [...prev, newPlant]);
-    
-    try {
-      await setDoc(doc(db, 'plants', plantId), newPlant);
-    } catch (error) {
-      console.error("Error adding plant:", error);
-      // Revert optimistic update on failure
-      setPlants(prev => prev.filter(p => p.id !== plantId));
-    }
   };
 
   const deletePlant = async (id: string) => {
     if (!user) return;
-    
-    // Optimistic update
-    const previousPlants = [...plants];
     setPlants(prev => prev.filter(p => p.id !== id));
     setSchedule(prev => prev.filter(t => t.plant !== plants.find(p => p.id === id)?.name));
-    
-    try {
-      await deleteDoc(doc(db, 'plants', id));
-    } catch (error) {
-      console.error("Error deleting plant:", error);
-      setPlants(previousPlants);
-    }
   };
 
   const updatePlant = async (id: string, updates: Partial<Plant>) => {
     if (!user) return;
-    
-    // Optimistic update
-    const previousPlants = [...plants];
     setPlants(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
-    
-    try {
-      await updateDoc(doc(db, 'plants', id), updates);
-    } catch (error) {
-      console.error("Error updating plant:", error);
-      setPlants(previousPlants);
-    }
   };
 
   const addTask = (task: Task) => {
     if (!user) return;
     setSchedule(prev => [...prev, { ...task, userId: user.id }]);
+  };
+
+  const optimizeSchedule = async () => {
+    if (!user || plants.length === 0) return;
+    
+    try {
+      // In a real app, this would call an AI endpoint with weather data.
+      // For now, we'll simulate an adaptive shift based on plant health and season.
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const isSummer = currentMonth >= 5 && currentMonth <= 7;
+      const isWinter = currentMonth === 11 || currentMonth <= 1;
+
+      const newSchedule = schedule.map(task => {
+        if (task.type !== 'water' || task.completed) return task;
+        
+        const plant = plants.find(p => p.name === task.plant);
+        if (!plant) return task;
+
+        let shiftDays = 0;
+        
+        // Adaptive logic:
+        // 1. If plant health is low, maybe it needs more frequent checking (shift closer)
+        if (plant.health < 50) {
+          shiftDays -= 1; 
+        }
+        
+        // 2. Environmental logic (simulated)
+        if (isSummer) {
+          shiftDays -= 1; // Water more often in summer
+        } else if (isWinter) {
+          shiftDays += 2; // Water less often in winter
+        }
+
+        if (shiftDays !== 0) {
+          const taskDate = new Date(task.date);
+          const newDate = addDays(taskDate, shiftDays);
+          // Don't shift to the past
+          if (newDate >= today) {
+             return { ...task, date: format(newDate, 'yyyy-MM-dd') };
+          }
+        }
+        
+        return task;
+      });
+
+      setSchedule(newSchedule);
+    } catch (error) {
+      console.error("Error optimizing schedule:", error);
+    }
   };
 
   // Calculate streak based on completed tasks
@@ -209,7 +231,7 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
   const totalScans = schedule.filter(t => t.type === 'scan' && t.completed).length;
 
   return (
-    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, streak, totalScans }}>
+    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, optimizeSchedule, streak, totalScans }}>
       {children}
     </PlantContext.Provider>
   );
