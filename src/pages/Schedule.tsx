@@ -11,7 +11,7 @@ export default function Schedule() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ time: '', amount: '' });
+  const [editForm, setEditForm] = useState({ title: '', time: '', amount: '' });
 
   // Generate week days
   const startDate = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -31,12 +31,12 @@ export default function Schedule() {
 
   const startEditing = (task: Task) => {
     setEditingTaskId(task.id);
-    setEditForm({ time: task.time, amount: task.amount });
+    setEditForm({ title: task.title || task.plant || '', time: task.time, amount: task.amount });
   };
 
   const saveEdit = (id: string) => {
     setSchedule(schedule.map(task => 
-      task.id === id ? { ...task, time: editForm.time, amount: editForm.amount } : task
+      task.id === id ? { ...task, title: editForm.title, time: editForm.time, amount: editForm.amount } : task
     ));
     setEditingTaskId(null);
   };
@@ -53,6 +53,7 @@ export default function Schedule() {
     const newTask: Task = {
       id: Date.now().toString(),
       plant: t('New Plant'),
+      title: t('New Task'),
       time: t('Morning'),
       amount: '100ml',
       completed: false,
@@ -173,41 +174,51 @@ export default function Schedule() {
                 </button>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className={clsx(
-                    "font-bold truncate",
-                    task.completed ? "text-stone-500 line-through" : "text-stone-800"
-                  )}>
-                    {task.plant}
-                  </h3>
-                  
                   {editingTaskId === task.id ? (
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex flex-col gap-2 mt-1">
                       <input 
                         type="text" 
-                        value={editForm.time} 
-                        onChange={(e) => setEditForm({...editForm, time: e.target.value})}
-                        className="text-xs font-medium text-stone-700 bg-stone-100 px-2 py-1 rounded-md border border-stone-200 focus:outline-none focus:border-emerald-500 w-24"
-                        placeholder={t('Time')}
+                        value={editForm.title} 
+                        onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                        className="text-sm font-bold text-stone-800 bg-stone-100 px-2 py-1 rounded-md border border-stone-200 focus:outline-none focus:border-emerald-500 w-full"
+                        placeholder={t('Task Title')}
                       />
-                      <input 
-                        type="text" 
-                        value={editForm.amount} 
-                        onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
-                        className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 focus:outline-none focus:border-blue-500 w-24"
-                        placeholder={t('Amount')}
-                      />
+                      <div className="flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={editForm.time} 
+                          onChange={(e) => setEditForm({...editForm, time: e.target.value})}
+                          className="text-xs font-medium text-stone-700 bg-stone-100 px-2 py-1 rounded-md border border-stone-200 focus:outline-none focus:border-emerald-500 w-24"
+                          placeholder={t('Time')}
+                        />
+                        <input 
+                          type="text" 
+                          value={editForm.amount} 
+                          onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
+                          className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-1 rounded-md border border-blue-200 focus:outline-none focus:border-blue-500 w-24"
+                          placeholder={t('Amount')}
+                        />
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">{t(task.time)}</span>
-                      <span className={clsx(
-                        "text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1",
-                        task.type === 'scan' ? "text-purple-600 bg-purple-50" : "text-blue-600 bg-blue-50"
+                    <>
+                      <h3 className={clsx(
+                        "font-bold truncate",
+                        task.completed ? "text-stone-500 line-through" : "text-stone-800"
                       )}>
-                        {task.type === 'scan' ? <Camera className="w-3 h-3" /> : <Droplets className="w-3 h-3" />}
-                        {t(task.amount)}
-                      </span>
-                    </div>
+                        {task.title || task.plant}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">{t(task.time)}</span>
+                        <span className={clsx(
+                          "text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1",
+                          task.type === 'scan' ? "text-purple-600 bg-purple-50" : "text-blue-600 bg-blue-50"
+                        )}>
+                          {task.type === 'scan' ? <Camera className="w-3 h-3" /> : <Droplets className="w-3 h-3" />}
+                          {t(task.amount)}
+                        </span>
+                      </div>
+                    </>
                   )}
                 </div>
 

@@ -1,14 +1,16 @@
-import { Settings, Award, Droplets, Leaf, ChevronRight, Bell, Shield, LogOut, Moon, Sun, Camera } from 'lucide-react';
+import { Settings, Award, Droplets, Leaf, ChevronRight, Bell, Shield, LogOut, Moon, Sun, Camera, Globe, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePlants } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 export default function Profile() {
   const { user, logout, toggleDarkMode, updateProfilePicture, toggleNotifications } = useAuth();
-  const { plants, streak } = usePlants();
-  const { t } = useLanguage();
+  const { plants, streak, totalScans } = usePlants();
+  const { language, setLanguage, t } = useLanguage();
+  const { isInstallable, installApp } = usePWAInstall();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -30,14 +32,14 @@ export default function Profile() {
 
   const stats = [
     { label: t('Plants'), value: plants.length.toString(), icon: Leaf, color: 'text-emerald-500 bg-emerald-50' },
-    { label: t('Care Streak'), value: `${streak} ${t('Days')}`, icon: Droplets, color: 'text-blue-500 bg-blue-50' },
-    { label: t('Scans'), value: '12', icon: Award, color: 'text-amber-500 bg-amber-50' },
+    { label: t('Care Streak'), value: `${streak} ${t('days')}`, icon: Droplets, color: 'text-blue-500 bg-blue-50' },
+    { label: t('Scans'), value: totalScans.toString(), icon: Award, color: 'text-amber-500 bg-amber-50' },
   ];
 
   const achievements = [
-    { id: '1', title: 'Green Thumb', description: 'Kept 5 plants alive for 3 months', icon: '🌱', unlocked: true },
-    { id: '2', title: 'Water Boy', description: 'Watered plants on time for 7 days', icon: '💧', unlocked: true },
-    { id: '3', title: 'Plant Doctor', description: 'Scanned 10 sick plants', icon: '🩺', unlocked: false },
+    { id: '1', title: 'First Plant Added', description: 'Added your first plant to the collection', icon: '🌱', unlocked: plants.length > 0 },
+    { id: '2', title: '3-Day Streak', description: 'Watered plants on time for 3 days', icon: '🔥', unlocked: streak >= 3 },
+    { id: '3', title: 'First Scan Completed', description: 'Scanned a plant for health diagnosis', icon: '📷', unlocked: totalScans > 0 },
   ];
 
   return (
@@ -149,15 +151,44 @@ export default function Profile() {
               <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${user?.notificationsEnabled ? 'translate-x-7' : 'translate-x-1'} force-white-bg`} />
             </div>
           </button>
-          <button className="w-full flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left">
+          
+          <div className="w-full flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 flex items-center justify-center">
-                <Shield className="w-5 h-5" />
+                <Globe className="w-5 h-5" />
               </div>
-              <span className="font-bold text-stone-800 dark:text-stone-100">{t('Privacy & Security')}</span>
+              <span className="font-bold text-stone-800 dark:text-stone-100">{t('Language')}</span>
             </div>
-            <ChevronRight className="w-5 h-5 text-stone-400" />
-          </button>
+            <select 
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as any)}
+              className="bg-transparent text-stone-600 dark:text-stone-300 font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="en">🇺🇸 English</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="ta">🇮🇳 தமிழ்</option>
+              <option value="hi">🇮🇳 हिन्दी</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="zh">🇨🇳 中文</option>
+              <option value="ja">🇯🇵 日本語</option>
+              <option value="ar">🇸🇦 العربية</option>
+              <option value="pt">🇵🇹 Português</option>
+              <option value="ko">🇰🇷 한국어</option>
+            </select>
+          </div>
+
+          {isInstallable && (
+            <button onClick={installApp} className="w-full flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
+                  <Download className="w-5 h-5" />
+                </div>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">{t('Install App')}</span>
+              </div>
+            </button>
+          )}
+
           <button onClick={handleLogout} className="w-full flex items-center justify-between p-4 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left group">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/50 transition-colors">

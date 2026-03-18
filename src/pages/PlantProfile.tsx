@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Droplets, Sun, Thermometer, Wind, Calendar as CalendarIcon, AlertTriangle, CheckCircle, Edit3, Trash2, Leaf, Camera, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ArrowLeft, Droplets, Sun, Thermometer, Wind, Calendar as CalendarIcon, AlertTriangle, CheckCircle, Edit3, Trash2, Leaf, Camera, ChevronLeft, ChevronRight, X, Activity } from 'lucide-react';
 import { usePlants, Task } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, isToday, parseISO, startOfDay, isSameWeek } from 'date-fns';
 import { clsx } from 'clsx';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function PlantProfile() {
   const { id } = useParams();
@@ -79,6 +80,7 @@ export default function PlantProfile() {
       addTask({
         id: Date.now().toString(),
         plant: plant.name,
+        title: t('Water Plant'),
         time: 'Anytime',
         amount: 'Watered',
         completed: true,
@@ -104,6 +106,7 @@ export default function PlantProfile() {
     addTask({
       id: Date.now().toString() + 'scan',
       plant: plant.name,
+      title: t('Weekly Health Scan'),
       time: 'Anytime',
       amount: 'Weekly Health Scan',
       completed: true,
@@ -141,6 +144,7 @@ export default function PlantProfile() {
       newSchedule.push({
         id: Date.now().toString() + 'water' + i,
         plant: plant.name,
+        title: t('Water Plant'),
         time: 'Morning',
         amount: 'Regular watering',
         completed: false,
@@ -156,6 +160,25 @@ export default function PlantProfile() {
   const hasCompletedScanThisWeek = (date: Date) => {
     return plantTasks.some(t => t.type === 'scan' && t.completed && isSameWeek(parseISO(t.date), date));
   };
+
+  const healthData = useMemo(() => {
+    const data = [];
+    let current = Math.max(40, Math.min(100, plant.health - 20 + Math.random() * 10));
+    for (let i = 6; i >= 1; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i * 7);
+      data.push({
+        name: format(date, 'MMM dd'),
+        health: Math.round(current)
+      });
+      current = Math.max(40, Math.min(100, current + (Math.random() * 15 - 5)));
+    }
+    data.push({
+      name: format(new Date(), 'MMM dd'),
+      health: plant.health
+    });
+    return data;
+  }, [plant.health]);
 
   return (
     <div className="pb-24 md:pb-8 bg-stone-50 min-h-screen">
@@ -329,6 +352,49 @@ export default function PlantProfile() {
                 <p className="font-bold text-stone-800 text-sm">{t(plant.humidity)}</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Health Graph */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center">
+              <Activity className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-stone-800">{t('Health History')}</h2>
+          </div>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={healthData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f4" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#a8a29e', fontSize: 12 }} 
+                  dy={10}
+                />
+                <YAxis 
+                  domain={[0, 100]} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#a8a29e', fontSize: 12 }}
+                  dx={-10}
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  labelStyle={{ color: '#57534e', fontWeight: 'bold', marginBottom: '4px' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="health" 
+                  stroke="#10b981" 
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 6, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 

@@ -15,6 +15,7 @@ export type User = {
   profilePicture?: string;
   darkMode: boolean;
   notificationsEnabled?: boolean;
+  tutorialSeen?: boolean;
 };
 
 type AuthContextType = {
@@ -87,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name,
         darkMode: false,
         notificationsEnabled: false,
+        tutorialSeen: false,
       };
       
       await setDoc(doc(db, 'users', userCredential.user.uid), {

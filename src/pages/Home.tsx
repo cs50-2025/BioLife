@@ -124,7 +124,7 @@ export default function Home() {
                     "font-bold truncate",
                     task.completed ? "text-stone-500 line-through" : "text-stone-800"
                   )}>
-                    {task.plant}
+                    {task.title || task.plant}
                   </h3>
                   <p className="text-sm text-stone-500 truncate">{t(task.amount)} • {t(task.time)}</p>
                 </div>

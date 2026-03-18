@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Camera, Upload, X, CheckCircle, AlertTriangle, RefreshCw, Leaf } from 'lucide-react';
+import { Camera, Upload, X, CheckCircle, AlertTriangle, RefreshCw, Leaf, Sun, Thermometer, Droplets } from 'lucide-react';
 import Webcam from 'react-webcam';
 import { GoogleGenAI } from '@google/genai';
 import { clsx } from 'clsx';
@@ -136,6 +136,7 @@ export default function Scan() {
       addTask({
         id: Date.now().toString() + 'water' + i,
         plant: newPlant.name,
+        title: t('Water Plant'),
         time: 'Morning',
         amount: '150ml',
         completed: false,
@@ -149,6 +150,7 @@ export default function Scan() {
       addTask({
         id: Date.now().toString() + 'scan' + i,
         plant: newPlant.name,
+        title: t('Weekly Health Scan'),
         time: 'Anytime',
         amount: 'Take a picture',
         completed: false,
@@ -266,6 +268,27 @@ export default function Scan() {
                   </ul>
                 </div>
               )}
+
+              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-3">{t('Care Requirements')}</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                    <Sun className="w-6 h-6 text-amber-500 mb-2" />
+                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Sunlight')}</span>
+                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.sunlight)}</span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                    <Thermometer className="w-6 h-6 text-orange-500 mb-2" />
+                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Temp')}</span>
+                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.temperature)}</span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl shadow-sm border border-blue-50">
+                    <Droplets className="w-6 h-6 text-blue-500 mb-2" />
+                    <span className="text-xs font-bold text-stone-500 uppercase">{t('Humidity')}</span>
+                    <span className="text-sm font-medium text-stone-800 mt-1">{t(result.humidity)}</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 flex gap-3">

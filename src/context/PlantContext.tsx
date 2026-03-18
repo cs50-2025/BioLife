@@ -26,6 +26,7 @@ export type Task = {
   id: string;
   userId?: string;
   plant: string;
+  title?: string;
   time: string;
   amount: string;
   completed: boolean;
@@ -42,6 +43,7 @@ type PlantContextType = {
   setSchedule: (schedule: Task[]) => void;
   addTask: (task: Task) => void;
   streak: number;
+  totalScans: number;
 };
 
 const PlantContext = createContext<PlantContextType | undefined>(undefined);
@@ -204,9 +206,10 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
   };
 
   const streak = calculateStreak();
+  const totalScans = schedule.filter(t => t.type === 'scan' && t.completed).length;
 
   return (
-    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, streak }}>
+    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, streak, totalScans }}>
       {children}
     </PlantContext.Provider>
   );

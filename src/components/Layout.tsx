@@ -1,9 +1,11 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Camera, Leaf, Calendar, BookOpen, MapPin, MessageCircle, User, Globe } from 'lucide-react';
+import { Home, Camera, Leaf, Calendar, BookOpen, MapPin, MessageCircle, User, Globe, Download } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useLanguage } from '../context/LanguageContext';
 import { useNotifications } from '../hooks/useNotifications';
+import { usePWAInstall } from '../hooks/usePWAInstall';
+import TutorialPopup from './TutorialPopup';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,23 +13,29 @@ export function cn(...inputs: ClassValue[]) {
 
 export default function Layout() {
   const { t, language, setLanguage } = useLanguage();
+  const { isInstallable, installApp } = usePWAInstall();
   useNotifications();
 
   const mobileNavItems = [
     { to: '/', icon: Home, label: t('Home') },
     { to: '/plants', icon: Leaf, label: t('My Plants') },
-    { to: '/add', icon: Camera, label: t('Add Plant') },
+    { to: '/add', icon: Camera, label: t('Add Plant'), id: 'add-plant-btn' },
+    { to: '/scan', icon: Camera, label: t('Scan'), id: 'nav-scan' },
     { to: '/profile', icon: User, label: t('Profile') },
   ];
 
   const desktopNavItems = [
-    ...mobileNavItems,
+    { to: '/', icon: Home, label: t('Home') },
+    { to: '/plants', icon: Leaf, label: t('My Plants') },
+    { to: '/add', icon: Camera, label: t('Add Plant'), id: 'add-plant-btn' },
+    { to: '/scan', icon: Camera, label: t('Scan'), id: 'nav-scan' },
     { to: '/schedule', icon: Calendar, label: t('Schedule') },
     { to: '/doctor', icon: MessageCircle, label: t('Doctor') || 'Doctor' },
   ];
 
   return (
     <div className="flex h-screen bg-stone-50 text-stone-900 font-sans overflow-hidden">
+      <TutorialPopup />
       {/* Desktop Sidebar */}
       <nav className="hidden md:flex w-64 bg-white border-r border-stone-200 flex-col py-4 px-2 z-50 shrink-0">
         <div className="flex items-center gap-3 px-4 py-6 mb-4">
@@ -42,6 +50,7 @@ export default function Layout() {
             <NavLink
               key={item.to}
               to={item.to}
+              id={item.id}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium',
@@ -106,10 +115,28 @@ export default function Layout() {
               onChange={(e) => setLanguage(e.target.value as any)}
               className="w-full bg-stone-100 border-none rounded-xl px-3 py-2 text-sm text-stone-700 focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
             >
-              <option value="en">{t('English')}</option>
-              <option value="es">{t('Spanish')}</option>
-              <option value="ta">{t('Tamil')}</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="ta">🇮🇳 தமிழ்</option>
+              <option value="hi">🇮🇳 हिन्दी</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="zh">🇨🇳 中文</option>
+              <option value="ja">🇯🇵 日本語</option>
+              <option value="ar">🇸🇦 العربية</option>
+              <option value="pt">🇵🇹 Português</option>
+              <option value="ko">🇰🇷 한국어</option>
             </select>
+            
+            {isInstallable && (
+              <button 
+                onClick={installApp}
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-4 py-2 text-sm font-bold transition-colors shadow-sm"
+              >
+                <Download className="w-4 h-4" />
+                <span>{t('Install App')}</span>
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -126,6 +153,7 @@ export default function Layout() {
             <NavLink
               key={item.to}
               to={item.to}
+              id={item.id}
               className={({ isActive }) =>
                 cn(
                   'flex flex-col items-center justify-center p-2 rounded-xl transition-colors min-w-[72px] shrink-0',

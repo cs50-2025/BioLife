@@ -56,6 +56,7 @@ export default function AddPlant() {
     addTask({
       id: Date.now().toString() + '_task',
       plant: name,
+      title: t('Water Plant'),
       time: 'Morning',
       amount: 'Moderate',
       completed: false,
