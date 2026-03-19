@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Leaf, CheckCircle2 } from 'lucide-react';
+import { Leaf, Sparkles, Droplets, Activity, Bot, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface WelcomeProps {
@@ -16,67 +16,131 @@ export default function Welcome({ onComplete }: WelcomeProps) {
     if (onComplete) {
       onComplete();
     }
-    // Re-evaluate the current route now that hasVisitedSession is true
     navigate(location.pathname + location.search, { replace: true });
   };
 
+  const handleSignIn = () => {
+    if (onComplete) {
+      onComplete();
+    }
+    navigate('/login');
+  };
+
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
-      <div className="w-full max-w-md flex flex-col items-center text-center space-y-8">
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-emerald-500/30 flex flex-col">
+      {/* Navigation */}
+      <nav className="w-full px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg border border-emerald-200 flex items-center justify-center bg-emerald-50">
+            <Leaf className="w-5 h-5 text-emerald-600" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-stone-900">BioLife</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={handleSignIn}
+            className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
+          >
+            Sign In
+          </button>
+          <button 
+            onClick={handleGetStarted}
+            className="text-sm font-medium text-emerald-700 px-5 py-2 rounded-full border border-emerald-200 hover:bg-emerald-50 transition-colors"
+          >
+            Get Started
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 max-w-5xl mx-auto w-full text-center">
         
-        {/* Icon & App Name */}
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center shadow-sm">
-            <Leaf className="w-12 h-12 text-emerald-600" />
-          </div>
-          <h1 className="text-2xl font-bold text-emerald-700 tracking-tight">{t('BioLife')}</h1>
+        {/* Pill Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-200 bg-stone-50 mb-8">
+          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+          <span className="text-[10px] font-semibold tracking-widest text-stone-600 uppercase">
+            BioLife Plant Intelligence
+          </span>
         </div>
 
-        {/* Headline & Description */}
-        <div className="space-y-3">
-          <h2 className="text-3xl font-extrabold text-stone-900 leading-tight">
-            {t('Take Care of Your Plants, Effortlessly')}
-          </h2>
-          <p className="text-lg text-stone-600">
-            {t('Track your plants, get reminders, and help them grow healthy every day.')}
-          </p>
-        </div>
+        {/* Headline */}
+        <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black tracking-tighter leading-[0.9] mb-6">
+          <span className="text-stone-900 block">Your Garden,</span>
+          <span className="text-emerald-600 block mt-2">Reimagined</span>
+        </h1>
 
-        {/* Feature Highlights */}
-        <div className="w-full bg-white rounded-2xl p-6 shadow-sm border border-stone-100 space-y-4 text-left">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-            <span className="text-stone-700 font-medium">{t('Track all your plants in one place')}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-            <span className="text-stone-700 font-medium">{t('Get watering reminders')}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-            <span className="text-stone-700 font-medium">{t('Monitor plant health easily')}</span>
-          </div>
-        </div>
-
-        {/* Friendly Line */}
-        <p className="text-stone-600 font-medium italic">
-          {t('Your plants deserve the best care — and we’re here to help 🌱')}
+        {/* Subtitle */}
+        <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+          BioLife fuses botanical intelligence with futuristic design. 
+          Track, nurture, and diagnose your plants with AI-powered precision.
         </p>
 
-        {/* Action Button */}
-        <div className="w-full pt-4">
-          <button
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row items-center gap-6 mb-24">
+          <button 
             onClick={handleGetStarted}
-            className="w-full bg-emerald-600 text-white py-4 rounded-full font-bold text-lg hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 active:scale-[0.98]"
+            className="group flex items-center gap-2 bg-emerald-600 border border-emerald-600 text-white px-8 py-3.5 rounded-full font-semibold hover:bg-emerald-700 transition-all shadow-sm hover:shadow-md"
           >
-            {t('Get Started')}
+            Enter BioLife
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-          <p className="text-sm text-stone-400 mt-4">
-            {t('It only takes a few seconds to begin')}
-          </p>
+          <button 
+            onClick={handleSignIn}
+            className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
+          >
+            I have an account
+          </button>
         </div>
 
-      </div>
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full text-left">
+          
+          {/* Card 1 */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 hover:border-stone-300 transition-colors shadow-sm">
+            <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
+              <Leaf className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Smart Tracking</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              Monitor every plant in your garden with real-time health scores and growth data.
+            </p>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 hover:border-stone-300 transition-colors shadow-sm">
+            <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
+              <Droplets className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Water Intelligence</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              AI-calculated watering schedules that adapt to each plant's unique needs.
+            </p>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 hover:border-stone-300 transition-colors shadow-sm">
+            <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
+              <Activity className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Health Diagnostics</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              Visual health indicators and trend analysis for your entire botanical collection.
+            </p>
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 hover:border-stone-300 transition-colors shadow-sm">
+            <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
+              <Bot className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">AI Plant Doctor</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              Describe symptoms, get instant diagnosis and treatment plans powered by AI.
+            </p>
+          </div>
+
+        </div>
+      </main>
     </div>
   );
 }
