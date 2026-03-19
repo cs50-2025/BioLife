@@ -16,7 +16,7 @@ export default function Welcome({ onComplete }: WelcomeProps) {
     if (onComplete) {
       onComplete();
     }
-    navigate(location.pathname + location.search, { replace: true });
+    navigate('/signup');
   };
 
   const handleSignIn = () => {
