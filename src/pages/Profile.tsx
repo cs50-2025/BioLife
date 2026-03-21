@@ -1,4 +1,4 @@
-import { Settings, Award, Droplets, Leaf, ChevronRight, Bell, Shield, LogOut, Moon, Sun, Camera, Globe, Download } from 'lucide-react';
+import { Settings, Award, Droplets, Leaf, ChevronRight, Bell, Shield, LogOut, Moon, Sun, Camera, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePlants } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -9,7 +9,7 @@ import { usePWAInstall } from '../hooks/usePWAInstall';
 export default function Profile() {
   const { user, logout, toggleDarkMode, updateProfilePicture, toggleNotifications } = useAuth();
   const { plants, streak, totalScans } = usePlants();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const { isInstallable, installApp } = usePWAInstall();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -148,32 +148,6 @@ export default function Profile() {
               <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${user?.notificationsEnabled ? 'translate-x-7' : 'translate-x-1'} force-white-bg`} />
             </div>
           </button>
-          
-          <div className="w-full flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 flex items-center justify-center">
-                <Globe className="w-5 h-5" />
-              </div>
-              <span className="font-bold text-stone-800 dark:text-stone-100">{t('Language')}</span>
-            </div>
-            <select 
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
-              className="bg-transparent text-stone-600 dark:text-stone-300 font-medium focus:outline-none cursor-pointer"
-            >
-              <option value="en">🇺🇸 English</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="ta">🇮🇳 தமிழ்</option>
-              <option value="hi">🇮🇳 हिन्दी</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="zh">🇨🇳 中文</option>
-              <option value="ja">🇯🇵 日本語</option>
-              <option value="ar">🇸🇦 العربية</option>
-              <option value="pt">🇵🇹 Português</option>
-              <option value="ko">🇰🇷 한국어</option>
-            </select>
-          </div>
 
           {isInstallable && (
             <button onClick={installApp} className="w-full flex items-center justify-between p-4 border-b border-stone-100 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left group">

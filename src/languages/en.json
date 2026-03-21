@@ -279,5 +279,7 @@
   "Username": "Username",
   "Failed to sign up": "Failed to sign up",
   "Time for a health scan for": "Time for a health scan for",
-  "plant(s)": "plant(s)"
+  "plant(s)": "plant(s)",
+  "Retake": "Retake",
+  "Update Plant": "Update Plant"
 }

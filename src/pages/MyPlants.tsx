@@ -41,7 +41,7 @@ export default function MyPlants() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl md:text-3xl font-bold text-stone-800">{t('My Plants')}</h1>
-        <Link to="/add" className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors shadow-sm">
+        <Link to="/scan" className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors shadow-sm">
           <Plus className="w-5 h-5" />
         </Link>
       </div>
@@ -70,7 +70,7 @@ export default function MyPlants() {
           </div>
           <h3 className="text-lg font-bold text-stone-800 mb-1">{t("No plants yet 🌱")}</h3>
           <p className="text-stone-500 text-sm mb-6">{t("Add your first plant to start tracking its care.")}</p>
-          <Link to="/add" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
+          <Link to="/scan" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors">
             <Plus className="w-5 h-5" />
             {t('Add your first plant')}
           </Link>

@@ -104,28 +104,6 @@ export default function Layout() {
           </NavLink>
 
           <div className="mt-auto pt-4 px-4">
-            <div className="flex items-center gap-3 text-stone-500 mb-2">
-              <Globe className="w-5 h-5" />
-              <span className="font-medium text-sm">{t('Language')}</span>
-            </div>
-            <select 
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
-              className="w-full bg-stone-100 border-none rounded-xl px-3 py-2 text-sm text-stone-700 focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
-            >
-              <option value="en">🇺🇸 English</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="ta">🇮🇳 தமிழ்</option>
-              <option value="hi">🇮🇳 हिन्दी</option>
-              <option value="fr">🇫🇷 Français</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="zh">🇨🇳 中文</option>
-              <option value="ja">🇯🇵 日本語</option>
-              <option value="ar">🇸🇦 العربية</option>
-              <option value="pt">🇵🇹 Português</option>
-              <option value="ko">🇰🇷 한국어</option>
-            </select>
-            
             {isInstallable && (
               <button 
                 onClick={installApp}

@@ -202,7 +202,7 @@ export default function Home() {
             </div>
             <h3 className="text-lg font-bold text-stone-800 mb-1">{t("All caught up!")}</h3>
             <p className="text-stone-500 text-sm mb-6">{t("You don't have any tasks scheduled for today.")}</p>
-            <Link to="/add" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm">
+            <Link to="/scan" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm">
               <Plus className="w-5 h-5" />
               {t('Add your first plant')}
             </Link>
@@ -240,7 +240,7 @@ export default function Home() {
                 </Link>
               </motion.div>
             ))}
-            <Link to="/add" className="bg-stone-50 rounded-3xl p-3 border-2 border-dashed border-stone-200 min-w-[160px] shrink-0 flex flex-col items-center justify-center text-stone-500 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 transition-all cursor-pointer">
+            <Link to="/scan" className="bg-stone-50 rounded-3xl p-3 border-2 border-dashed border-stone-200 min-w-[160px] shrink-0 flex flex-col items-center justify-center text-stone-500 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 transition-all cursor-pointer">
               <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-2">
                 <Plus className="w-6 h-6" />
               </div>
@@ -254,7 +254,7 @@ export default function Home() {
             </div>
             <h3 className="text-lg font-bold text-stone-800 mb-1">{t("No plants yet 🌱")}</h3>
             <p className="text-stone-500 text-sm mb-6">{t("Add your first plant to start tracking its care.")}</p>
-            <Link to="/add" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm">
+            <Link to="/scan" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm">
               <Plus className="w-5 h-5" />
               {t('Add your first plant')}
             </Link>
