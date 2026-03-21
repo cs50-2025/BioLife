@@ -43,7 +43,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-8 dark:bg-stone-900 dark:text-stone-100 min-h-screen">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-8 bg-white dark:bg-white dark:text-stone-900 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-start">
         <h1 className="text-2xl md:text-3xl font-bold text-stone-800 dark:text-stone-100">{t('Profile')}</h1>
