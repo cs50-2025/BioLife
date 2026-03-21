@@ -12,7 +12,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 export default function PlantProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { plants, deletePlant, updatePlant, schedule, setSchedule, addTask } = usePlants();
+  const { plants, deletePlant, updatePlant, schedule, setSchedule, addTask, incrementScanCount } = usePlants();
   const { t } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showAdjustModal, setShowAdjustModal] = useState(false);
@@ -164,6 +164,8 @@ export default function PlantProfile() {
         ...plant.history
       ]
     });
+    
+    incrementScanCount();
     
     setShowWeeklyScanModal(false);
     setScanImage(null);

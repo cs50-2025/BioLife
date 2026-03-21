@@ -8,6 +8,9 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
   const { signup, user, isAuthReady } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -18,8 +21,30 @@ export default function Signup() {
     }
   }, [user, isAuthReady, navigate]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isHolding && progress < 100) {
+      interval = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 2, 100));
+      }, 50);
+    } else if (!isHolding && progress < 100) {
+      setProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [isHolding, progress]);
+
+  useEffect(() => {
+    if (progress === 100) {
+      setIsVerified(true);
+    }
+  }, [progress]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isVerified) {
+      setError(t('Please complete the bot check'));
+      return;
+    }
     setError('');
     try {
       await signup(name, password);
@@ -88,10 +113,33 @@ export default function Signup() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-stone-700">
+                {t('Bot Check')}
+              </label>
+              <div
+                className="w-full h-6 bg-stone-200 rounded-md overflow-hidden cursor-pointer relative select-none"
+                onMouseDown={() => !isVerified && setIsHolding(true)}
+                onMouseUp={() => setIsHolding(false)}
+                onMouseLeave={() => setIsHolding(false)}
+                onTouchStart={() => !isVerified && setIsHolding(true)}
+                onTouchEnd={() => setIsHolding(false)}
+              >
+                <div
+                  className="h-full bg-emerald-500 transition-all duration-75"
+                  style={{ width: `${progress}%` }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-stone-700">
+                  {isVerified ? t('Verified') : t('Hold to verify')}
+                </div>
+              </div>
+            </div>
+
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                disabled={!isVerified}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-stone-400 disabled:cursor-not-allowed"
               >
                 {t('Sign up')}
               </button>

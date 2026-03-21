@@ -16,17 +16,22 @@ export default function Scan() {
   const [locationInput, setLocationInput] = useState('');
   const [weeklyScanAgreed, setWeeklyScanAgreed] = useState(false);
   const webcamRef = useRef<Webcam>(null);
-  const { addPlant, addTask } = usePlants();
+  const { addPlant, addTask, incrementScanCount } = usePlants();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [scanned, setScanned] = useState(false);
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setImage(imageSrc);
+      if (!scanned) {
+        setScanned(true);
+        incrementScanCount();
+      }
       analyzeImage(imageSrc);
     }
-  }, [webcamRef]);
+  }, [webcamRef, scanned]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,6 +40,10 @@ export default function Scan() {
       reader.onloadend = () => {
         const base64String = reader.result as string;
         setImage(base64String);
+        if (!scanned) {
+          setScanned(true);
+          incrementScanCount();
+        }
         analyzeImage(base64String);
       };
       reader.readAsDataURL(file);
@@ -346,7 +355,7 @@ export default function Scan() {
             </div>
 
             <div className="mt-8 flex gap-3">
-              <button className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors" onClick={() => { setImage(null); setResult(null); }}>
+              <button className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors" onClick={() => { setImage(null); setResult(null); setScanned(false); }}>
                 {t('Scan Another')}
               </button>
               <button 

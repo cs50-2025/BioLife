@@ -40,6 +40,7 @@ type PlantContextType = {
   schedule: Task[];
   setSchedule: (schedule: Task[]) => void;
   addTask: (task: Task) => void;
+  incrementScanCount: () => void;
   optimizeSchedule: () => Promise<void>;
   streak: number;
   totalScans: number;
@@ -125,6 +126,21 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
   const addTask = (task: Task) => {
     if (!user) return;
     setSchedule(prev => [...prev, { ...task, userId: user.id }]);
+  };
+
+  const incrementScanCount = () => {
+    if (!user) return;
+    addTask({
+      id: Date.now().toString(),
+      userId: user.id,
+      plant: 'General',
+      title: 'Scan',
+      time: 'Anytime',
+      amount: '1',
+      completed: true,
+      date: format(new Date(), 'yyyy-MM-dd'),
+      type: 'scan'
+    });
   };
 
   const optimizeSchedule = async () => {
@@ -231,7 +247,7 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
   const totalScans = schedule.filter(t => t.type === 'scan' && t.completed).length;
 
   return (
-    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, optimizeSchedule, streak, totalScans }}>
+    <PlantContext.Provider value={{ plants, addPlant, deletePlant, updatePlant, schedule, setSchedule, addTask, incrementScanCount, optimizeSchedule, streak, totalScans }}>
       {children}
     </PlantContext.Provider>
   );
