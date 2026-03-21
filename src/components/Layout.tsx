@@ -20,6 +20,10 @@ export default function Layout() {
     { to: '/', icon: Home, label: t('Home') },
     { to: '/plants', icon: Leaf, label: t('My Plants') },
     { to: '/scan', icon: Camera, label: t('Scan'), id: 'nav-scan' },
+    { to: '/schedule', icon: Calendar, label: t('Schedule') },
+    { to: '/doctor', icon: MessageCircle, label: t('Doctor') || 'Doctor' },
+    { to: '/guide', icon: BookOpen, label: t('Care Guide') || 'Care Guide' },
+    { to: '/stores', icon: MapPin, label: t('Nearby Stores') || 'Nearby Stores' },
     { to: '/profile', icon: User, label: t('Profile') },
   ];
 
