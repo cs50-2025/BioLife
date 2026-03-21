@@ -8,6 +8,7 @@ export type User = {
   darkMode: boolean;
   notificationsEnabled?: boolean;
   tutorialSeen?: boolean;
+  registrationDate?: string;
 };
 
 type AuthContextType = {
@@ -96,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       darkMode: false,
       notificationsEnabled: false,
       tutorialSeen: false,
+      registrationDate: new Date().getFullYear().toString(),
     };
     
     storedUsers[name.toLowerCase()] = { ...newUser, password };

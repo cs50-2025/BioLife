@@ -71,10 +71,10 @@ export default function Profile() {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100">{user?.name || t('Plant Parent')}</h2>
-          <p className="text-stone-500 dark:text-stone-400">{t('Plant Parent since 2023')}</p>
+          <p className="text-stone-500 dark:text-stone-400">{t('Plant Parent since')} {user?.registrationDate || '2026'}</p>
           <div className="mt-2 inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full text-sm font-bold border border-emerald-100 dark:border-emerald-800">
             <Award className="w-4 h-4" />
-            {t('Level 5 Botanist')}
+            {t('Level 1 Botanist')}
           </div>
         </div>
       </div>

@@ -168,7 +168,6 @@ export default function PlantProfile() {
     setShowWeeklyScanModal(false);
     setScanImage(null);
     setScanResult(null);
-    alert(t('Weekly scan completed! Your plant looks healthy.'));
   };
 
   const handleEditOpen = () => {

@@ -113,6 +113,9 @@ export default function Layout() {
                 <span>{t('Install App')}</span>
               </button>
             )}
+            <div className="mt-6 text-stone-400 text-xs text-center">
+              &copy; BioLife
+            </div>
           </div>
         </div>
       </nav>
