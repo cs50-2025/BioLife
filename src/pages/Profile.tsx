@@ -47,9 +47,6 @@ export default function Profile() {
       {/* Header */}
       <div className="flex justify-between items-start">
         <h1 className="text-2xl md:text-3xl font-bold text-stone-800 dark:text-stone-100">{t('Profile')}</h1>
-        <button className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 flex items-center justify-center hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
-          <Settings className="w-5 h-5" />
-        </button>
       </div>
 
       {/* User Info */}

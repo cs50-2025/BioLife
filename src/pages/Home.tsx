@@ -48,7 +48,7 @@ export default function Home() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-stone-800">
-            {t("Welcome back,")} {user?.name?.split(' ')[0] || 'Friend'}!
+            {t("Welcome back,")} {user?.name?.split(' ')[0] || t('Friend')}!
           </h1>
           <div className="flex items-center gap-2 mt-2">
             <span className={clsx("px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1", level.bg, level.color)}>
@@ -118,11 +118,11 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
               <p className="text-emerald-300 text-xs font-bold uppercase tracking-wider mb-1">{t('Water Saved')}</p>
-              <p className="text-2xl font-bold">{waterSavedLiters} <span className="text-sm font-normal text-stone-300">Liters</span></p>
+              <p className="text-2xl font-bold">{waterSavedLiters} <span className="text-sm font-normal text-stone-300">{t('Liters')}</span></p>
             </div>
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
               <p className="text-emerald-300 text-xs font-bold uppercase tracking-wider mb-1">{t('CO₂ Absorbed')}</p>
-              <p className="text-2xl font-bold">{co2AbsorbedKg} <span className="text-sm font-normal text-stone-300">kg</span></p>
+              <p className="text-2xl font-bold">{co2AbsorbedKg} <span className="text-sm font-normal text-stone-300">{t('kg')}</span></p>
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function Home() {
           </div>
           <div>
             <h3 className="font-bold text-blue-900">{t('Watering Alert')}</h3>
-            <p className="text-blue-800 text-sm">{t(`You have ${pendingTasks.length} plant(s) that need water today.`)}</p>
+            <p className="text-blue-800 text-sm">{t('You have')} {pendingTasks.length} {t('plant(s) that need water today.')}</p>
           </div>
         </motion.div>
       )}
@@ -204,7 +204,7 @@ export default function Home() {
             <p className="text-stone-500 text-sm mb-6">{t("You don't have any tasks scheduled for today.")}</p>
             <Link to="/add" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm">
               <Plus className="w-5 h-5" />
-              {t('Add a Plant')}
+              {t('Add your first plant')}
             </Link>
           </div>
         )}

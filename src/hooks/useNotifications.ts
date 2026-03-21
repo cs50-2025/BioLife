@@ -2,10 +2,12 @@ import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { usePlants } from '../context/PlantContext';
 import { format } from 'date-fns';
+import { useLanguage } from '../context/LanguageContext';
 
 export function useNotifications() {
   const { user } = useAuth();
   const { schedule } = usePlants();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!user?.notificationsEnabled) return;
@@ -30,7 +32,7 @@ export function useNotifications() {
         const waterTasks = todaysTasks.filter(t => t.type !== 'scan');
         if (waterTasks.length > 0) {
           new Notification('BioLife', {
-            body: `Good morning! You have ${waterTasks.length} plant(s) to water today.`,
+            body: `${t('Good morning')}! ${t('You have')} ${waterTasks.length} ${t('plant(s) that need water today.')}`,
             icon: '/favicon.ico'
           });
           sentStatus.morning = true;
@@ -42,7 +44,7 @@ export function useNotifications() {
         const scanTasks = todaysTasks.filter(t => t.type === 'scan');
         if (scanTasks.length > 0) {
           new Notification('BioLife', {
-            body: `Good afternoon! Time for a health scan for ${scanTasks.length} plant(s).`,
+            body: `${t('Good afternoon')}! ${t('Time for a health scan for')} ${scanTasks.length} ${t('plant(s)')}.`,
             icon: '/favicon.ico'
           });
           sentStatus.afternoon = true;
@@ -57,5 +59,5 @@ export function useNotifications() {
     // Check every minute
     const interval = setInterval(checkNotifications, 60000);
     return () => clearInterval(interval);
-  }, [user?.notificationsEnabled, schedule]);
+  }, [user?.notificationsEnabled, schedule, t]);
 }

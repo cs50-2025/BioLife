@@ -41,13 +41,13 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             onClick={handleSignIn}
             className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
           >
-            Sign In
+            {t('Sign In')}
           </button>
           <button 
             onClick={handleGetStarted}
             className="text-sm font-medium text-emerald-700 px-5 py-2 rounded-full border border-emerald-200 hover:bg-emerald-50 transition-colors"
           >
-            Get Started
+            {t('Get Started')}
           </button>
         </div>
       </nav>
@@ -59,20 +59,19 @@ export default function Welcome({ onComplete }: WelcomeProps) {
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-200 bg-stone-50 mb-8">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
           <span className="text-[10px] font-semibold tracking-widest text-stone-600 uppercase">
-            BioLife Plant Intelligence
+            {t('BioLife Plant Intelligence')}
           </span>
         </div>
 
         {/* Headline */}
         <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black tracking-tighter leading-[0.9] mb-6">
-          <span className="text-stone-900 block">Your Garden,</span>
-          <span className="text-emerald-600 block mt-2">Reimagined</span>
+          <span className="text-stone-900 block">{t('Your Garden,')}</span>
+          <span className="text-emerald-600 block mt-2">{t('Reimagined')}</span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-          BioLife fuses botanical intelligence with futuristic design. 
-          Track, nurture, and diagnose your plants with AI-powered precision.
+          {t('BioLife fuses botanical intelligence with futuristic design. Track, nurture, and diagnose your plants with AI-powered precision.')}
         </p>
 
         {/* Actions */}
@@ -81,14 +80,14 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             onClick={handleGetStarted}
             className="group flex items-center gap-2 bg-emerald-600 border border-emerald-600 text-white px-8 py-3.5 rounded-full font-semibold hover:bg-emerald-700 transition-all shadow-sm hover:shadow-md"
           >
-            Enter BioLife
+            {t('Enter BioLife')}
             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
           <button 
             onClick={handleSignIn}
             className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
           >
-            I have an account
+            {t('I have an account')}
           </button>
         </div>
 
@@ -100,9 +99,9 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
               <Leaf className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Smart Tracking</h3>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">{t('Smart Tracking')}</h3>
             <p className="text-sm text-stone-600 leading-relaxed">
-              Monitor every plant in your garden with real-time health scores and growth data.
+              {t('Monitor every plant in your garden with real-time health scores and growth data.')}
             </p>
           </div>
 
@@ -111,9 +110,9 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
               <Droplets className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Water Intelligence</h3>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">{t('Water Intelligence')}</h3>
             <p className="text-sm text-stone-600 leading-relaxed">
-              AI-calculated watering schedules that adapt to each plant's unique needs.
+              {t("AI-calculated watering schedules that adapt to each plant's unique needs.")}
             </p>
           </div>
 
@@ -122,9 +121,9 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
               <Activity className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">Health Diagnostics</h3>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">{t('Health Diagnostics')}</h3>
             <p className="text-sm text-stone-600 leading-relaxed">
-              Visual health indicators and trend analysis for your entire botanical collection.
+              {t('Visual health indicators and trend analysis for your entire botanical collection.')}
             </p>
           </div>
 
@@ -133,9 +132,9 @@ export default function Welcome({ onComplete }: WelcomeProps) {
             <div className="w-10 h-10 rounded-xl border border-emerald-100 bg-emerald-50 flex items-center justify-center mb-5">
               <Bot className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">AI Plant Doctor</h3>
+            <h3 className="text-lg font-bold text-stone-900 mb-2 tracking-tight">{t('AI Plant Doctor')}</h3>
             <p className="text-sm text-stone-600 leading-relaxed">
-              Describe symptoms, get instant diagnosis and treatment plans powered by AI.
+              {t('Describe symptoms, get instant diagnosis and treatment plans powered by AI.')}
             </p>
           </div>
 

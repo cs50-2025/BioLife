@@ -19,7 +19,6 @@ export default function Layout() {
   const mobileNavItems = [
     { to: '/', icon: Home, label: t('Home') },
     { to: '/plants', icon: Leaf, label: t('My Plants') },
-    { to: '/add', icon: Camera, label: t('Add Plant'), id: 'add-plant-btn' },
     { to: '/scan', icon: Camera, label: t('Scan'), id: 'nav-scan' },
     { to: '/profile', icon: User, label: t('Profile') },
   ];
@@ -27,7 +26,6 @@ export default function Layout() {
   const desktopNavItems = [
     { to: '/', icon: Home, label: t('Home') },
     { to: '/plants', icon: Leaf, label: t('My Plants') },
-    { to: '/add', icon: Camera, label: t('Add Plant'), id: 'add-plant-btn' },
     { to: '/scan', icon: Camera, label: t('Scan'), id: 'nav-scan' },
     { to: '/schedule', icon: Calendar, label: t('Schedule') },
     { to: '/doctor', icon: MessageCircle, label: t('Doctor') || 'Doctor' },

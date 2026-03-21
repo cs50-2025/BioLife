@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLanguage } from './LanguageContext';
 
 export type User = {
   id: string;
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('biolife_user');
@@ -62,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userRecord = storedUsers[name.toLowerCase()];
     
     if (!userRecord || userRecord.password !== password) {
-      throw new Error('Incorrect username or password.');
+      throw new Error(t('Incorrect username or password.'));
     }
     
     const loggedInUser: User = {
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     const storedUsers = JSON.parse(localStorage.getItem('biolife_users_db') || '{}');
     if (storedUsers[name.toLowerCase()]) {
-      throw new Error('Username already exists. Please log in.');
+      throw new Error(t('Username already exists. Please log in.'));
     }
     
     const newUser: User = {
@@ -157,10 +159,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               localStorage.setItem('biolife_users_db', JSON.stringify(storedUsers));
             }
           } else {
-            alert('Notification permission denied. Please enable it in your browser settings.');
+            alert(t('Notification permission denied. Please enable it in your browser settings.'));
           }
         } else {
-          alert('This browser does not support desktop notifications.');
+          alert(t('This browser does not support desktop notifications.'));
         }
       } else {
         const updatedUser = { ...user, notificationsEnabled: false };
