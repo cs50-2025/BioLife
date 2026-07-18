@@ -4,6 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import { clsx } from 'clsx';
 import { useLanguage } from '../context/LanguageContext';
+import { useSubscription } from '../context/SubscriptionContext';
 
 type Message = {
   id: string;
@@ -14,6 +15,7 @@ type Message = {
 
 export default function Doctor() {
   const { t } = useLanguage();
+  const { isPro, doctorImagesUsed, incrementDoctorImages, setShowPaywall, setPaywallMessage } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -36,6 +38,13 @@ export default function Doctor() {
   }, [messages, isLoading]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isPro && doctorImagesUsed >= 3) {
+      setPaywallMessage("You've reached your daily limit of 3 diagnostic images. Upgrade to Pro for unlimited AI diagnoses!");
+      setShowPaywall(true);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -49,6 +58,15 @@ export default function Doctor() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() && !selectedImage) return;
+
+    if (selectedImage) {
+      if (!isPro && doctorImagesUsed >= 3) {
+        setPaywallMessage("You've reached your daily limit of 3 diagnostic images. Upgrade to Pro for unlimited AI diagnoses!");
+        setShowPaywall(true);
+        return;
+      }
+      incrementDoctorImages();
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),

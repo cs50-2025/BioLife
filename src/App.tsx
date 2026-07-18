@@ -17,34 +17,37 @@ import OnboardingGuard from './components/OnboardingGuard';
 import { PlantProvider } from './context/PlantContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { SubscriptionProvider } from './context/SubscriptionContext';
 
 export default function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <PlantProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<OnboardingGuard />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/" element={<Layout />}>
-                    <Route index element={<Home />} />
-                    <Route path="scan" element={<Scan />} />
-                    <Route path="plants" element={<MyPlants />} />
-                    <Route path="plants/:id" element={<PlantProfile />} />
-                    <Route path="schedule" element={<Schedule />} />
-                    <Route path="guide" element={<Guide />} />
-                    <Route path="stores" element={<Stores />} />
-                    <Route path="doctor" element={<Doctor />} />
-                    <Route path="profile" element={<Profile />} />
+        <SubscriptionProvider>
+          <PlantProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<OnboardingGuard />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Home />} />
+                      <Route path="scan" element={<Scan />} />
+                      <Route path="plants" element={<MyPlants />} />
+                      <Route path="plants/:id" element={<PlantProfile />} />
+                      <Route path="schedule" element={<Schedule />} />
+                      <Route path="guide" element={<Guide />} />
+                      <Route path="stores" element={<Stores />} />
+                      <Route path="doctor" element={<Doctor />} />
+                      <Route path="profile" element={<Profile />} />
+                    </Route>
                   </Route>
                 </Route>
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </PlantProvider>
+              </Routes>
+            </BrowserRouter>
+          </PlantProvider>
+        </SubscriptionProvider>
       </AuthProvider>
     </LanguageProvider>
   );

@@ -1,16 +1,43 @@
 import { useState } from 'react';
-import { MapPin, Navigation, Search, Loader2, Compass, ExternalLink } from 'lucide-react';
+import { MapPin, Navigation, Search, Loader2, Compass, ExternalLink, Lock } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../context/LanguageContext';
+import { useSubscription } from '../context/SubscriptionContext';
 
 export default function Stores() {
   const { t } = useLanguage();
+  const { isPro, setShowPaywall, setPaywallMessage } = useSubscription();
   const [query, setQuery] = useState(t('plant nurseries and garden centers'));
   const [cityState, setCityState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resultText, setResultText] = useState('');
   const [places, setPlaces] = useState<any[]>([]);
+
+  if (!isPro) {
+    return (
+      <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 text-center min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="w-24 h-24 bg-stone-100 rounded-full flex items-center justify-center mb-6">
+          <Lock className="w-10 h-10 text-stone-400" />
+        </div>
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-800">{t('Nearby Stores')}</h1>
+        <p className="text-stone-500 max-w-md mx-auto">
+          {t('Discover the best local plant nurseries and gardening supplies with AI-powered recommendations.')}
+        </p>
+        <div className="mt-8">
+          <button 
+            onClick={() => {
+              setPaywallMessage("Unlock the Nearby Stores feature with BioLife Pro!");
+              setShowPaywall(true);
+            }}
+            className="px-8 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20"
+          >
+            {t('Upgrade to Pro to Unlock')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
