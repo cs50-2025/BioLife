@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+/public/icon-192.png
+/public/icon-512.png
+/public/icon-maskable.png
