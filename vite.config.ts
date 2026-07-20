@@ -13,6 +13,7 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['icon.svg'],
+        manifestFilename: 'manifest.json',
         manifest: {
           name: 'BioLife',
           short_name: 'BioLife',
