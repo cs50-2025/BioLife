@@ -7,6 +7,12 @@ async function generate() {
     .toFile('public/icon-512.png');
   console.log('Generated icon-512.png');
 
+  await sharp('public/feature-graphic.svg')
+    .resize(1024, 500)
+    .png()
+    .toFile('public/feature-graphic.png');
+  console.log('Generated feature-graphic.png');
+
   await sharp('public/icon.svg')
     .resize(192, 192)
     .png()

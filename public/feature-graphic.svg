@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a7f3d0" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="500" fill="url(#bgGrad)" />
+
+  <!-- Decorative Background Circles/Leaves -->
+  <circle cx="850" cy="100" r="250" fill="#ffffff" opacity="0.05" />
+  <circle cx="900" cy="400" r="180" fill="#ffffff" opacity="0.04" />
+  <circle cx="100" cy="450" r="200" fill="#ffffff" opacity="0.04" />
+
+  <!-- Leaf Graphic Left/Center -->
+  <g transform="translate(180, 110)">
+    <!-- Outer Leaf -->
+    <path d="M 140 0 C 30 0, 0 80, 0 160 C 0 240, 90 280, 140 280 C 190 280, 280 240, 280 160 C 280 80, 250 0, 140 0 Z" fill="url(#leafGrad)" opacity="0.9" />
+    <!-- Inner Leaf -->
+    <path d="M 140 40 C 70 40, 40 100, 40 160 C 40 220, 100 250, 140 250 C 180 250, 240 220, 240 160 C 240 100, 210 40, 140 40 Z" fill="#064e3b" opacity="0.85" />
+    <!-- Center Accent -->
+    <path d="M 140 80 C 100 80, 80 120, 80 160 C 80 200, 120 220, 140 220 C 160 220, 200 200, 200 160 C 200 120, 180 80, 140 80 Z" fill="url(#accentGrad)" />
+  </g>
+
+  <!-- Text Section -->
+  <g transform="translate(500, 210)">
+    <text font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="800" font-size="72" fill="#ffffff" letter-spacing="2">
+      BioLife
+    </text>
+    <text y="55" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="500" font-size="28" fill="#a7f3d0" letter-spacing="1">
+      Plant Care &amp; Life Science Assistant
+    </text>
+  </g>
+</svg>

@@ -12,7 +12,7 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable.png'],
+        includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable.png', 'feature-graphic.png'],
         manifestFilename: 'manifest.json',
         manifest: {
           name: 'BioLife',
