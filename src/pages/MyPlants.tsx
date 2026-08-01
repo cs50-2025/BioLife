@@ -2,23 +2,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Search, Filter, Droplets, Sun, Thermometer, Edit, Trash2 } from 'lucide-react';
 import { usePlants, Plant } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useSubscription } from '../context/SubscriptionContext';
 import { format, isToday, isPast, parseISO } from 'date-fns';
 
 export default function MyPlants() {
   const { plants, deletePlant, updatePlant } = usePlants();
   const { t } = useLanguage();
-  const { canAddPlant, setShowPaywall, setPaywallMessage } = useSubscription();
   const navigate = useNavigate();
 
   const handleAddClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!canAddPlant(plants.length)) {
-      setPaywallMessage("You've reached the limit of 5 plants on the free plan.");
-      setShowPaywall(true);
-    } else {
-      navigate('/scan');
-    }
+    navigate('/scan');
   };
 
   const getStatusBadge = (plant: Plant) => {

@@ -24,6 +24,18 @@ async function generate() {
     .png()
     .toFile('public/icon-maskable.png');
   console.log('Generated icon-maskable.png');
+
+  await sharp('public/screenshot1.svg')
+    .resize(1080, 1920)
+    .png()
+    .toFile('public/screenshot1.png');
+  console.log('Generated screenshot1.png');
+
+  await sharp('public/screenshot2.svg')
+    .resize(1080, 1920)
+    .png()
+    .toFile('public/screenshot2.png');
+  console.log('Generated screenshot2.png');
 }
 
 generate().catch(console.error);

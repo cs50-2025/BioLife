@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Welcome from './pages/Welcome';
+import Privacy from './pages/Privacy';
 import ProtectedRoute from './components/ProtectedRoute';
 import OnboardingGuard from './components/OnboardingGuard';
 import { PlantProvider } from './context/PlantContext';
@@ -27,6 +28,7 @@ export default function App() {
           <PlantProvider>
             <BrowserRouter>
               <Routes>
+                <Route path="/privacy" element={<Privacy />} />
                 <Route element={<OnboardingGuard />}>
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />

@@ -16,40 +16,15 @@ export default function Scan() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationInput, setLocationInput] = useState('');
   const [weeklyScanAgreed, setWeeklyScanAgreed] = useState(false);
-  const [showAdModal, setShowAdModal] = useState(false);
   
   const webcamRef = useRef<Webcam>(null);
   const { plants, addPlant, addTask, incrementScanCount } = usePlants();
-  const { isPro, scansUsed, incrementScans, setShowPaywall, setPaywallMessage, canAddPlant } = useSubscription();
+  const { incrementScans } = useSubscription();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [scanned, setScanned] = useState(false);
 
-  const checkScanLimit = () => {
-    if (!isPro && scansUsed >= 3) {
-      setShowAdModal(true);
-      return false;
-    }
-    return true;
-  };
-
-  const handleWatchAd = () => {
-    // Simulate watching an ad
-    setShowAdModal(false);
-    alert("Watching Ad... (Simulated). You can now scan 1 more plant.");
-    // We don't increment until they actually scan. But we need a way to allow 1 more scan.
-    // Easiest is to just allow them if they watched an ad, by artificially reducing the count or using a flag.
-    // For simplicity, let's just use a local state flag `adWatchedForNextScan`.
-  };
-
-  const [adWatchedForNextScan, setAdWatchedForNextScan] = useState(false);
-
   const capture = useCallback(() => {
-    if (!isPro && scansUsed >= 3 && !adWatchedForNextScan) {
-      setShowAdModal(true);
-      return;
-    }
-
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setImage(imageSrc);
@@ -57,18 +32,12 @@ export default function Scan() {
         setScanned(true);
         incrementScanCount();
         incrementScans();
-        setAdWatchedForNextScan(false);
       }
       analyzeImage(imageSrc);
     }
-  }, [webcamRef, scanned, isPro, scansUsed, adWatchedForNextScan]);
+  }, [webcamRef, scanned]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isPro && scansUsed >= 3 && !adWatchedForNextScan) {
-      setShowAdModal(true);
-      return;
-    }
-
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -79,7 +48,6 @@ export default function Scan() {
           setScanned(true);
           incrementScanCount();
           incrementScans();
-          setAdWatchedForNextScan(false);
         }
         analyzeImage(base64String);
       };
@@ -181,12 +149,6 @@ export default function Scan() {
 
   const handleSavePlant = () => {
     if (!result || !locationInput.trim() || !weeklyScanAgreed) return;
-
-    if (!isPro && canAddPlant && !canAddPlant(plants ? plants.length : 0)) {
-       setPaywallMessage("You've reached the limit of 5 plants on the free plan.");
-       setShowPaywall(true);
-       return;
-    }
 
     const newPlant: Plant = {
       id: Date.now().toString(),
@@ -478,49 +440,6 @@ export default function Scan() {
           <button className="w-12 h-12 rounded-full bg-stone-800/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-stone-700 transition-colors">
             <RefreshCw className="w-5 h-5" />
           </button>
-        </div>
-      )}
-
-      {/* Ad/Paywall Modal for Scans */}
-      {showAdModal && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 text-stone-900">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Camera className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Scan Limit Reached</h3>
-            <p className="text-stone-500 text-sm mb-6">
-              You've used all 3 free scans. Watch a short ad for an extra scan, or upgrade to Pro for unlimited scanning!
-            </p>
-            <div className="space-y-3">
-              <button 
-                onClick={() => {
-                  setAdWatchedForNextScan(true);
-                  setShowAdModal(false);
-                  alert("Ad watched! (Simulated). You can scan now.");
-                }}
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <PlaySquare className="w-5 h-5" /> Watch Ad
-              </button>
-              <button 
-                onClick={() => {
-                  setShowAdModal(false);
-                  setPaywallMessage("Get unlimited scans, ad-free!");
-                  setShowPaywall(true);
-                }}
-                className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors"
-              >
-                Upgrade to Pro
-              </button>
-              <button 
-                onClick={() => setShowAdModal(false)}
-                className="w-full bg-stone-100 text-stone-600 font-bold py-3 rounded-xl hover:bg-stone-200 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>

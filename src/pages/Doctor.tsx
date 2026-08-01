@@ -15,7 +15,7 @@ type Message = {
 
 export default function Doctor() {
   const { t } = useLanguage();
-  const { isPro, doctorImagesUsed, incrementDoctorImages, setShowPaywall, setPaywallMessage } = useSubscription();
+  const { incrementDoctorImages } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -38,13 +38,6 @@ export default function Doctor() {
   }, [messages, isLoading]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isPro && doctorImagesUsed >= 3) {
-      setPaywallMessage("You've reached your daily limit of 3 diagnostic images. Upgrade to Pro for unlimited AI diagnoses!");
-      setShowPaywall(true);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
-    }
-
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -60,11 +53,6 @@ export default function Doctor() {
     if (!input.trim() && !selectedImage) return;
 
     if (selectedImage) {
-      if (!isPro && doctorImagesUsed >= 3) {
-        setPaywallMessage("You've reached your daily limit of 3 diagnostic images. Upgrade to Pro for unlimited AI diagnoses!");
-        setShowPaywall(true);
-        return;
-      }
       incrementDoctorImages();
     }
 

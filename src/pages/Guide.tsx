@@ -10,7 +10,7 @@ export default function Guide() {
   const [activeLesson, setActiveLesson] = useState<{title: string, content: string} | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useLanguage();
-  const { isPro, lessonsUsed, incrementLessons, setShowPaywall, setPaywallMessage } = useSubscription();
+  const { incrementLessons } = useSubscription();
 
   const topics = [
     { title: t('Watering 101'), desc: t('Learn the soak and dry method'), icon: Droplets, color: 'text-blue-500 bg-blue-50' },
@@ -20,12 +20,6 @@ export default function Guide() {
   ];
 
   const generateLesson = async (topic: string) => {
-    if (!isPro && lessonsUsed >= 6) {
-      setPaywallMessage("You've reached your limit of 6 free lessons per day. Upgrade to Pro for unlimited AI learning!");
-      setShowPaywall(true);
-      return;
-    }
-
     setIsLoading(true);
     incrementLessons();
     setActiveLesson({ title: topic, content: '' });

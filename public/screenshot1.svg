@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fafc" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="scanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#064e3b" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1080" height="1920" fill="#f0fdf4" />
+
+  <!-- Top App Bar -->
+  <rect width="1080" height="240" fill="url(#headerGrad)" />
+  <!-- Status bar indicators simulated -->
+  <text x="60" y="80" font-family="system-ui, sans-serif" font-weight="600" font-size="32" fill="#ffffff">9:41</text>
+  <text x="960" y="80" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#ffffff">100%</text>
+
+  <!-- Title & Icon -->
+  <text x="60" y="170" font-family="system-ui, sans-serif" font-weight="800" font-size="52" fill="#ffffff">BioLife AI Scanner</text>
+
+  <!-- Main Camera / Scan Area Card -->
+  <g transform="translate(60, 280)" filter="url(#shadow)">
+    <rect width="960" height="800" rx="36" fill="#064e3b" />
+    <!-- Inner viewfinder -->
+    <rect x="40" y="40" width="880" height="720" rx="28" fill="#0f2922" />
+    
+    <!-- Plant Illustration in Scanner -->
+    <g transform="translate(340, 220)">
+      <circle cx="140" cy="140" r="180" fill="#ffffff" opacity="0.05" />
+      <path d="M 140 0 C 30 0, 0 80, 0 160 C 0 240, 90 280, 140 280 C 190 280, 280 240, 280 160 C 280 80, 250 0, 140 0 Z" fill="url(#leafGrad)" />
+      <path d="M 140 40 C 70 40, 40 100, 40 160 C 40 220, 100 250, 140 250 C 180 250, 240 220, 240 160 C 240 100, 210 40, 140 40 Z" fill="#022c22" opacity="0.4" />
+    </g>
+
+    <!-- Scan Reticle Corners -->
+    <path d="M 100 160 L 100 100 L 160 100" stroke="#34d399" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M 860 160 L 860 100 L 800 100" stroke="#34d399" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M 100 600 L 100 660 L 160 660" stroke="#34d399" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M 860 600 L 860 660 L 800 660" stroke="#34d399" stroke-width="8" stroke-linecap="round" fill="none" />
+
+    <!-- Identification Overlay Tag -->
+    <rect x="230" y="660" width="500" height="70" rx="35" fill="url(#scanGrad)" />
+    <text x="480" y="707" font-family="system-ui, sans-serif" font-weight="700" font-size="32" fill="#ffffff" text-anchor="middle">✓ Monstera Deliciosa (99%)</text>
+  </g>
+
+  <!-- Diagnosis & Care Details Card -->
+  <g transform="translate(60, 1120)" filter="url(#shadow)">
+    <rect width="960" height="580" rx="36" fill="url(#cardGrad)" stroke="#e2e8f0" stroke-width="2" />
+    
+    <text x="60" y="80" font-family="system-ui, sans-serif" font-weight="800" font-size="44" fill="#064e3b">AI Plant Health Analysis</text>
+
+    <!-- Stat 1: Health Status -->
+    <g transform="translate(60, 130)">
+      <rect width="400" height="180" rx="24" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2" />
+      <text x="40" y="60" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#047857">Overall Health</text>
+      <text x="40" y="125" font-family="system-ui, sans-serif" font-weight="800" font-size="44" fill="#065f46">98% Excellent</text>
+    </g>
+
+    <!-- Stat 2: Sunlight -->
+    <g transform="translate(500, 130)">
+      <rect width="400" height="180" rx="24" fill="#fef3c7" stroke="#fde68a" stroke-width="2" />
+      <text x="40" y="60" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#b45309">Light Need</text>
+      <text x="40" y="125" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#78350f">Bright Indirect</text>
+    </g>
+
+    <!-- Stat 3: Watering -->
+    <g transform="translate(60, 340)">
+      <rect width="400" height="180" rx="24" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" />
+      <text x="40" y="60" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#1d4ed8">Water Schedule</text>
+      <text x="40" y="125" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#1e40af">Every 7 Days</text>
+    </g>
+
+    <!-- Stat 4: Humidity -->
+    <g transform="translate(500, 340)">
+      <rect width="400" height="180" rx="24" fill="#f3e8ff" stroke="#e9d5ff" stroke-width="2" />
+      <text x="40" y="60" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#6b21a8">Humidity Target</text>
+      <text x="40" y="125" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#581c87">65% Optimal</text>
+    </g>
+  </g>
+
+  <!-- Bottom Nav Bar -->
+  <g transform="translate(0, 1750)">
+    <rect width="1080" height="170" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <!-- Nav Items -->
+    <g transform="translate(135, 60)">
+      <circle cx="0" cy="0" r="10" fill="#059669" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="700" font-size="28" fill="#059669" text-anchor="middle">Scan AI</text>
+    </g>
+    <g transform="translate(405, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">My Garden</text>
+    </g>
+    <g transform="translate(675, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">Care Guide</text>
+    </g>
+    <g transform="translate(945, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">Settings</text>
+    </g>
+  </g>
+</svg>

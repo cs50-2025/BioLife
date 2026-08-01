@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="headerGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="leafGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#064e3b" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1080" height="1920" fill="#f0fdf4" />
+
+  <!-- Top App Header -->
+  <rect width="1080" height="280" fill="url(#headerGrad2)" />
+  <text x="60" y="80" font-family="system-ui, sans-serif" font-weight="600" font-size="32" fill="#ffffff">9:41</text>
+  <text x="960" y="80" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#ffffff">100%</text>
+
+  <text x="60" y="170" font-family="system-ui, sans-serif" font-weight="800" font-size="52" fill="#ffffff">My Green Oasis</text>
+  <text x="60" y="225" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="#a7f3d0">4 Active Plants • 2 Reminders Today</text>
+
+  <!-- Daily Care Progress Card -->
+  <g transform="translate(60, 320)" filter="url(#shadow2)">
+    <rect width="960" height="190" rx="32" fill="#ffffff" stroke="#d1fae5" stroke-width="2" />
+    <text x="50" y="65" font-family="system-ui, sans-serif" font-weight="800" font-size="36" fill="#064e3b">Today's Care Routine</text>
+    <text x="720" y="65" font-family="system-ui, sans-serif" font-weight="700" font-size="32" fill="#059669">3 / 4 Done</text>
+    
+    <!-- Progress bar track -->
+    <rect x="50" y="105" width="860" height="28" rx="14" fill="#e2e8f0" />
+    <!-- Progress bar fill -->
+    <rect x="50" y="105" width="645" height="28" rx="14" fill="#10b981" />
+  </g>
+
+  <!-- Section Title -->
+  <text x="60" y="580" font-family="system-ui, sans-serif" font-weight="800" font-size="44" fill="#064e3b">Plant Collection</text>
+
+  <!-- Plant Card 1: Monstera Deliciosa -->
+  <g transform="translate(60, 620)" filter="url(#shadow2)">
+    <rect width="960" height="240" rx="32" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <!-- Plant Icon/Thumbnail -->
+    <rect x="30" y="30" width="180" height="180" rx="24" fill="#ecfdf5" />
+    <path d="M 120 60 C 80 60, 60 90, 60 120 C 60 150, 90 170, 120 170 C 150 170, 180 150, 180 120 C 180 90, 160 60, 120 60 Z" fill="url(#leafGrad2)" transform="translate(0, 10)" />
+    
+    <text x="240" y="85" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#0f172a">Monstera Deliciosa</text>
+    <text x="240" y="130" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748b">Living Room • Indirect Sun</text>
+    
+    <!-- Badge -->
+    <rect x="240" y="155" width="280" height="48" rx="24" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1.5" />
+    <text x="380" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="#047857" text-anchor="middle">💧 Water Tomorrow</text>
+  </g>
+
+  <!-- Plant Card 2: Fiddle Leaf Fig -->
+  <g transform="translate(60, 890)" filter="url(#shadow2)">
+    <rect width="960" height="240" rx="32" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <!-- Plant Icon/Thumbnail -->
+    <rect x="30" y="30" width="180" height="180" rx="24" fill="#fef3c7" />
+    <path d="M 120 60 C 80 60, 60 90, 60 120 C 60 150, 90 170, 120 170 C 150 170, 180 150, 180 120 C 180 90, 160 60, 120 60 Z" fill="#d97706" transform="translate(0, 10)" />
+    
+    <text x="240" y="85" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#0f172a">Fiddle Leaf Fig</text>
+    <text x="240" y="130" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748b">Balcony • Bright Light</text>
+    
+    <!-- Badge -->
+    <rect x="240" y="155" width="280" height="48" rx="24" fill="#fef3c7" stroke="#fde68a" stroke-width="1.5" />
+    <text x="380" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="#b45309" text-anchor="middle">⚠️ Mist Leaves Today</text>
+  </g>
+
+  <!-- Plant Card 3: Snake Plant -->
+  <g transform="translate(60, 1160)" filter="url(#shadow2)">
+    <rect width="960" height="240" rx="32" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <!-- Plant Icon/Thumbnail -->
+    <rect x="30" y="30" width="180" height="180" rx="24" fill="#eff6ff" />
+    <path d="M 120 60 C 80 60, 60 90, 60 120 C 60 150, 90 170, 120 170 C 150 170, 180 150, 180 120 C 180 90, 160 60, 120 60 Z" fill="#2563eb" transform="translate(0, 10)" />
+    
+    <text x="240" y="85" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#0f172a">Snake Plant</text>
+    <text x="240" y="130" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748b">Bedroom • Low Light</text>
+    
+    <!-- Badge -->
+    <rect x="240" y="155" width="280" height="48" rx="24" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5" />
+    <text x="380" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="#1d4ed8" text-anchor="middle">✓ Watered 2 days ago</text>
+  </g>
+
+  <!-- Plant Card 4: Calathea Orbifolia -->
+  <g transform="translate(60, 1430)" filter="url(#shadow2)">
+    <rect width="960" height="240" rx="32" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <!-- Plant Icon/Thumbnail -->
+    <rect x="30" y="30" width="180" height="180" rx="24" fill="#f3e8ff" />
+    <path d="M 120 60 C 80 60, 60 90, 60 120 C 60 150, 90 170, 120 170 C 150 170, 180 150, 180 120 C 180 90, 160 60, 120 60 Z" fill="#9333ea" transform="translate(0, 10)" />
+    
+    <text x="240" y="85" font-family="system-ui, sans-serif" font-weight="800" font-size="38" fill="#0f172a">Calathea Orbifolia</text>
+    <text x="240" y="130" font-family="system-ui, sans-serif" font-weight="500" font-size="28" fill="#64748b">Study Room • High Humidity</text>
+    
+    <!-- Badge -->
+    <rect x="240" y="155" width="280" height="48" rx="24" fill="#f3e8ff" stroke="#e9d5ff" stroke-width="1.5" />
+    <text x="380" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="#7e22ce" text-anchor="middle">🌱 Healthy &amp; Thriving</text>
+  </g>
+
+  <!-- Bottom Nav Bar -->
+  <g transform="translate(0, 1750)">
+    <rect width="1080" height="170" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    
+    <g transform="translate(135, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">Scan AI</text>
+    </g>
+    <g transform="translate(405, 60)">
+      <circle cx="0" cy="0" r="10" fill="#059669" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="700" font-size="28" fill="#059669" text-anchor="middle">My Garden</text>
+    </g>
+    <g transform="translate(675, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">Care Guide</text>
+    </g>
+    <g transform="translate(945, 60)">
+      <circle cx="0" cy="0" r="8" fill="#94a3b8" />
+      <text x="0" y="45" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="#64748b" text-anchor="middle">Settings</text>
+    </g>
+  </g>
+</svg>
