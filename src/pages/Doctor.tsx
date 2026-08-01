@@ -4,7 +4,6 @@ import { GoogleGenAI } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import { clsx } from 'clsx';
 import { useLanguage } from '../context/LanguageContext';
-import { useSubscription } from '../context/SubscriptionContext';
 
 type Message = {
   id: string;
@@ -15,7 +14,6 @@ type Message = {
 
 export default function Doctor() {
   const { t } = useLanguage();
-  const { incrementDoctorImages } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -51,10 +49,6 @@ export default function Doctor() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() && !selectedImage) return;
-
-    if (selectedImage) {
-      incrementDoctorImages();
-    }
 
     const userMessage: Message = {
       id: Date.now().toString(),

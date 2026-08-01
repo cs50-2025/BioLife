@@ -5,7 +5,6 @@ import { GoogleGenAI } from '@google/genai';
 import { clsx } from 'clsx';
 import { usePlants, Plant, Task } from '../context/PlantContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useSubscription } from '../context/SubscriptionContext';
 import { useNavigate } from 'react-router-dom';
 import { format, addDays } from 'date-fns';
 
@@ -19,7 +18,6 @@ export default function Scan() {
   
   const webcamRef = useRef<Webcam>(null);
   const { plants, addPlant, addTask, incrementScanCount } = usePlants();
-  const { incrementScans } = useSubscription();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [scanned, setScanned] = useState(false);
@@ -31,7 +29,6 @@ export default function Scan() {
       if (!scanned) {
         setScanned(true);
         incrementScanCount();
-        incrementScans();
       }
       analyzeImage(imageSrc);
     }
@@ -47,7 +44,6 @@ export default function Scan() {
         if (!scanned) {
           setScanned(true);
           incrementScanCount();
-          incrementScans();
         }
         analyzeImage(base64String);
       };
