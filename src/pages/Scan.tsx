@@ -21,6 +21,13 @@ export default function Scan() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [scanned, setScanned] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
+  const handleTouchMove = (e: React.TouchEvent) => { if (!touchStartY.current) return; const currentY = e.touches[0].clientY; const diff = currentY - touchStartY.current; const target = e.currentTarget as HTMLElement; if (diff > 50 && !isCollapsed && target.scrollTop <= 0) { setIsCollapsed(true); touchStartY.current = null; } else if (diff < -50 && isCollapsed) { setIsCollapsed(false); touchStartY.current = null; } };
+  const handleTouchEnd = () => { touchStartY.current = null; };
+
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
@@ -205,7 +212,7 @@ export default function Scan() {
       <div className="absolute top-0 w-full z-10 p-4 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent">
         <h1 className="text-xl font-bold tracking-tight">{t('Plant Scanner')}</h1>
         {image && (
-          <button onClick={() => { setImage(null); setResult(null); }} className="p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60 transition-colors">
+          <button onClick={() => { setImage(null); setResult(null); setIsCollapsed(false); }} className="p-2 bg-black/40 rounded-full backdrop-blur-sm hover:bg-black/60 transition-colors">
             <X className="w-5 h-5" />
           </button>
         )}
@@ -251,12 +258,20 @@ export default function Scan() {
       </div>
 
       {/* Controls / Results */}
-      <div className={clsx(
-        "absolute bottom-0 w-full bg-white text-stone-900 rounded-t-3xl transition-transform duration-500 ease-in-out z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]",
-        result ? "translate-y-0" : "translate-y-full"
-      )}>
+      <div
+        className={clsx(
+          "absolute bottom-0 w-full bg-white text-stone-900 rounded-t-3xl transition-transform duration-500 ease-in-out z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]",
+          !result ? "translate-y-full" : isCollapsed ? "translate-y-[calc(100%-100px)]" : "translate-y-0"
+        )}
+      >
         {result && (
-          <div className="p-6 max-h-[70vh] overflow-y-auto">
+          <div
+            className={clsx("p-6 max-h-[70vh] overflow-y-auto", isCollapsed ? "cursor-pointer" : "")}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={() => { if(isCollapsed) setIsCollapsed(false); }}
+          >
             <div className="w-12 h-1.5 bg-stone-200 rounded-full mx-auto mb-6"></div>
             
             <div className="flex justify-between items-start mb-6">
@@ -356,7 +371,7 @@ export default function Scan() {
             </div>
 
             <div className="mt-8 flex gap-3">
-              <button className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors" onClick={() => { setImage(null); setResult(null); setScanned(false); }}>
+              <button className="flex-1 bg-stone-100 text-stone-800 py-3 rounded-xl font-bold hover:bg-stone-200 transition-colors" onClick={() => { setImage(null); setResult(null); setIsCollapsed(false); setScanned(false); setIsCollapsed(false); }}>
                 {t('Scan Another')}
               </button>
               <button 
@@ -418,24 +433,44 @@ export default function Scan() {
         </div>
       )}
 
-      {/* Capture Controls */}
+      {/* Capture Controls & Gallery */}
       {!image && !isScanning && (
-        <div className="absolute bottom-0 w-full p-8 flex justify-center items-center gap-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-24 md:pb-8">
-          <label className="w-12 h-12 rounded-full bg-stone-800/80 backdrop-blur-md flex items-center justify-center text-white cursor-pointer hover:bg-stone-700 transition-colors">
-            <Upload className="w-5 h-5" />
-            <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-          </label>
+        <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-24 md:pb-8 pt-12 flex flex-col items-center">
           
-          <button 
-            onClick={capture}
-            className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center focus:outline-none hover:scale-105 transition-transform"
-          >
-            <div className="w-16 h-16 rounded-full bg-white"></div>
-          </button>
-          
-          <button className="w-12 h-12 rounded-full bg-stone-800/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-stone-700 transition-colors">
-            <RefreshCw className="w-5 h-5" />
-          </button>
+          {plants.length > 0 && (
+            <div className="w-full overflow-x-auto hide-scrollbar px-6 mb-6">
+              <div className="flex gap-3 pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+                {plants.map(plant => (
+                  <div 
+                    key={plant.id} 
+                    onClick={() => navigate(`/plants/${plant.id}`)}
+                    className="w-16 h-16 shrink-0 rounded-2xl border-2 border-white/20 overflow-hidden cursor-pointer hover:border-emerald-500 transition-colors shadow-lg relative group"
+                  >
+                    <img src={plant.image} alt={plant.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center items-center gap-8 px-8">
+            <label className="w-12 h-12 rounded-full bg-stone-800/80 backdrop-blur-md flex items-center justify-center text-white cursor-pointer hover:bg-stone-700 transition-colors">
+              <Upload className="w-5 h-5" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+            </label>
+            
+            <button 
+              onClick={capture}
+              className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center focus:outline-none hover:scale-105 transition-transform"
+            >
+              <div className="w-16 h-16 rounded-full bg-white"></div>
+            </button>
+            
+            <button className="w-12 h-12 rounded-full bg-stone-800/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-stone-700 transition-colors">
+              <RefreshCw className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       )}
     </div>

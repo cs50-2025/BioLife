@@ -41,9 +41,7 @@ export default function Layout() {
       {/* Desktop Sidebar */}
       <nav className="hidden md:flex w-64 bg-white border-r border-stone-200 flex-col py-4 px-2 z-50 shrink-0">
         <div className="flex items-center gap-3 px-4 py-6 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-sm">
-            <Leaf className="w-6 h-6 text-white" />
-          </div>
+          <img src="/icon.svg" className="w-10 h-10 rounded-xl shadow-sm" alt="BioLife Logo" />
           <span className="text-2xl font-bold text-stone-800 tracking-tight">BioLife</span>
         </div>
         

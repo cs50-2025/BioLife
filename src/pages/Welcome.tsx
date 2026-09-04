@@ -31,9 +31,7 @@ export default function Welcome({ onComplete }: WelcomeProps) {
       {/* Navigation */}
       <nav className="w-full px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg border border-emerald-200 flex items-center justify-center bg-emerald-50">
-            <Leaf className="w-5 h-5 text-emerald-600" />
-          </div>
+          <img src="/icon.svg" className="w-8 h-8 rounded-lg" alt="BioLife Logo" />
           <span className="text-xl font-bold tracking-tight text-stone-900">BioLife</span>
         </div>
         <div className="flex items-center gap-6">
